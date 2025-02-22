@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:ror="http://rorweb.com/0.1/" >
+<channel>
+  <title>ROR Sitemap for https://jeanlorencini.github.io/game-programming-patterns/index.html</title>
+  <link>https://jeanlorencini.github.io/game-programming-patterns/index.html</link>
+
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/index.html</link>
+     <title>Game Programming Patterns - Documentação</title>
+     <description>Game Programming Patterns - Documentação</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>0</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/introducao/arquitetura-performance-games.html</link>
+     <title>Arquitetura e Performance em Games - Game Programming Patterns</title>
+     <description>Arquitetura e Performance em Games - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/introducao/sobre-o-livro.html</link>
+     <title>Sobre o Livro - Game Programming Patterns</title>
+     <description>Sobre o Livro - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/principles/kiss-principle.html</link>
+     <title>KISS Principle - Game Programming Patterns</title>
+     <description>KISS Principle - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/principles/solid-principles.html</link>
+     <title>SOLID Principles - Game Programming Patterns</title>
+     <description>SOLID Principles - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/command.html</link>
+     <title>Command Pattern - Game Programming Patterns</title>
+     <description>Command Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/flyweight.html</link>
+     <title>Flyweight Pattern - Game Programming Patterns</title>
+     <description>Flyweight Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/observer.html</link>
+     <title>Observer Pattern - Game Programming Patterns</title>
+     <description>Observer Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/prototype.html</link>
+     <title>Prototype Pattern - Game Programming Patterns</title>
+     <description>Prototype Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/singleton.html</link>
+     <title>Singleton Pattern - Game Programming Patterns</title>
+     <description>Singleton Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/design-patterns/state.html</link>
+     <title>State Pattern - Game Programming Patterns</title>
+     <description>State Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/double-buffer.html</link>
+     <title>Double Buffer Pattern - Game Programming Patterns</title>
+     <description>Double Buffer Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/game-loop.html</link>
+     <title>Game Loop Pattern - Game Programming Patterns</title>
+     <description>Game Loop Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/update-method.html</link>
+     <title>Update Method Pattern - Game Programming Patterns</title>
+     <description>Update Method Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/bytecode.html</link>
+     <title>Bytecode Pattern - Game Programming Patterns</title>
+     <description>Bytecode Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/subclass-sandbox.html</link>
+     <title></title>
+     
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/type-object.html</link>
+     <title>Type Object Pattern - Game Programming Patterns</title>
+     <description>Type Object Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/component.html</link>
+     <title>Component Pattern - Game Programming Patterns</title>
+     <description>Component Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/event-queue.html</link>
+     <title>Event Queue Pattern - Game Programming Patterns</title>
+     <description>Event Queue Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/service-locator.html</link>
+     <title>Service Locator Pattern - Game Programming Patterns</title>
+     <description>Service Locator Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/data-locality.html</link>
+     <title>Data Locality Pattern - Game Programming Patterns</title>
+     <description>Data Locality Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/dirty-flag.html</link>
+     <title>Dirty Flag Pattern - Game Programming Patterns</title>
+     <description>Dirty Flag Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/object-pool.html</link>
+     <title>Object Pool Pattern - Game Programming Patterns</title>
+     <description>Object Pool Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+<item>
+     <link>https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/spatial-partition.html</link>
+     <title>Spatial Partition Pattern - Game Programming Patterns</title>
+     <description>Spatial Partition Pattern - Game Programming Patterns</description>
+     <ror:updatePeriod></ror:updatePeriod>
+     <ror:sortOrder>1</ror:sortOrder>
+     <ror:resourceOf>sitemap</ror:resourceOf>
+</item>
+</channel>
+</rss>
+  
