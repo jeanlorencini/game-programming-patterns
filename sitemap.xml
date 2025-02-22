@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
-        <loc>https://jeanlorencini.github.io/game-programming-patterns/</loc>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
+        <loc>https://jeanlorencini.github.io/game-programming-patterns/index.html</loc>
+        <lastmod>2025-02-22T18:40:20+00:00</lastmod>
+        <priority>1.00</priority>
     </url>
     <url>
         <loc>https://jeanlorencini.github.io/game-programming-patterns/introducao/arquitetura-performance-games.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <lastmod>2025-02-22T18:40:20+00:00</lastmod>
+        <priority>0.80</priority>
     </url>
     <url>
         <loc>https://jeanlorencini.github.io/game-programming-patterns/introducao/sobre-o-livro.html</loc>
