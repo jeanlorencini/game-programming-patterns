@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KISS Principle - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Princípios > KISS Principle
+        </div>
+
+        <div class="content">
+            <h2>KISS Principle (Keep It Simple, Stupid)</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>O princípio KISS defende que a maioria dos sistemas funciona melhor se forem mantidos simples em vez de complexos. A simplicidade deve ser um objetivo fundamental no design e complexidade desnecessária deve ser evitada.</p>
+            </div>
+
+            <h3>O Problema: Complexidade Desnecessária</h3>
+            <p>Em desenvolvimento de jogos, frequentemente nos deparamos com a tentação de criar sistemas complexos e sofisticados, mesmo quando soluções mais simples seriam suficientes. Isso pode levar a:</p>
+            <ul>
+                <li>Código difícil de manter</li>
+                <li>Bugs mais frequentes</li>
+                <li>Dificuldade de entendimento por outros desenvolvedores</li>
+                <li>Tempo de desenvolvimento aumentado</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Exemplo: Sistema de Inventário</h3>
+                <div class="code-block">
+                    <pre><code>
+// Abordagem Complexa (Não KISS)
+public class InventorySystemComplex {
+    private Dictionary<int, Dictionary<string, List<ItemData>>> inventoryByPlayerAndCategory;
+    private List<IInventoryObserver> observers;
+    private Queue<InventoryTransaction> transactionHistory;
+    
+    public void AddItem(int playerId, ItemData item) {
+        if (!inventoryByPlayerAndCategory.ContainsKey(playerId)) {
+            inventoryByPlayerAndCategory[playerId] = new Dictionary<string, List<ItemData>>();
+        }
+        
+        if (!inventoryByPlayerAndCategory[playerId].ContainsKey(item.Category)) {
+            inventoryByPlayerAndCategory[playerId][item.Category] = new List<ItemData>();
+        }
+        
+        inventoryByPlayerAndCategory[playerId][item.Category].Add(item);
+        NotifyObservers(new InventoryEvent(playerId, item, InventoryAction.Add));
+        transactionHistory.Enqueue(new InventoryTransaction(playerId, item, DateTime.Now));
+    }
+}
+
+// Abordagem Simples (KISS)
+public class InventorySystem {
+    private Dictionary<int, List<ItemData>> inventoryByPlayer;
+    
+    public void AddItem(int playerId, ItemData item) {
+        if (!inventoryByPlayer.ContainsKey(playerId)) {
+            inventoryByPlayer[playerId] = new List<ItemData>();
+        }
+        
+        inventoryByPlayer[playerId].Add(item);
+        OnInventoryChanged?.Invoke(playerId);
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Movimento</h3>
+            <div class="code-block">
+                <pre><code>
+// Abordagem Complexa (Não KISS)
+public class CharacterMovementComplex {
+    private Vector3 velocity;
+    private Vector3 acceleration;
+    private float dampingCoefficient;
+    private float airResistance;
+    private float groundFriction;
+    private bool isGrounded;
+    
+    public void UpdateMovement(float deltaTime) {
+        Vector3 totalForce = CalculateForces();
+        acceleration = totalForce / mass;
+        velocity += acceleration * deltaTime;
+        velocity *= (1f - (isGrounded ? groundFriction : airResistance) * deltaTime);
+        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+        transform.position += velocity * deltaTime;
+    }
+    
+    private Vector3 CalculateForces() {
+        // Cálculos complexos de física...
+    }
+}
+
+// Abordagem Simples (KISS)
+public class CharacterMovement {
+    public float moveSpeed = 5f;
+    
+    public void UpdateMovement(float horizontal, float vertical) {
+        Vector3 movement = new Vector3(horizontal, 0, vertical);
+        transform.position += movement.normalized * moveSpeed * Time.deltaTime;
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Código mais fácil de manter e debugar</li>
+                <li>Menor probabilidade de bugs</li>
+                <li>Desenvolvimento mais rápido</li>
+                <li>Mais fácil para novos desenvolvedores entenderem</li>
+                <li>Performance geralmente melhor</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Simples não significa simplista - o código ainda precisa resolver o problema adequadamente</li>
+                    <li>Não sacrifique funcionalidade necessária em nome da simplicidade</li>
+                    <li>Encontre o equilíbrio entre simplicidade e flexibilidade</li>
+                    <li>Documente decisões de simplificação para referência futura</li>
+                </ul>
+            </div>
+
+            <h3>Aplicação em Jogos</h3>
+            <ul>
+                <li>Mecânicas de jogo: Comece com versões simples e adicione complexidade conforme necessário</li>
+                <li>Sistemas de física: Use aproximações simples quando possível</li>
+                <li>IA: Prefira comportamentos simples e previsíveis a algoritmos complexos</li>
+                <li>UI: Mantenha a interface intuitiva e direta</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/command.html">Command</a> - Para simplificar ações complexas</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para dividir sistemas complexos em partes simples</li>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Para simplificar gerenciamento de objetos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

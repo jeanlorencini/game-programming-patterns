@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dirty Flag Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Otimização > Dirty Flag
+        </div>
+
+        <div class="content">
+            <h2>Dirty Flag Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Evitar cálculos desnecessários adiando-os até que seus resultados sejam realmente necessários e marcando objetos que precisam ser recalculados.</p>
+            </div>
+
+            <h3>O Problema: Cálculos Custosos</h3>
+            <p>Em jogos, muitos objetos têm propriedades que dependem de cálculos complexos (como transformações de matriz, cálculos de física, pathfinding). Recalcular essas propriedades toda vez que são acessadas é ineficiente, especialmente quando os valores não mudaram.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Transform {
+private:
+    Vector3 position_;
+    Quaternion rotation_;
+    Vector3 scale_;
+    Matrix4x4 worldMatrix_;
+    bool isDirty_;
+
+public:
+    Transform()
+        : position_(0, 0, 0)
+        , rotation_()  // identidade
+        , scale_(1, 1, 1)
+        , isDirty_(true)
+    {}
+
+    void setPosition(const Vector3& position) {
+        position_ = position;
+        markDirty();
+    }
+
+    void setRotation(const Quaternion& rotation) {
+        rotation_ = rotation;
+        markDirty();
+    }
+
+    void setScale(const Vector3& scale) {
+        scale_ = scale;
+        markDirty();
+    }
+
+    const Matrix4x4& getWorldMatrix() {
+        if (isDirty_) {
+            recalculateWorldMatrix();
+        }
+        return worldMatrix_;
+    }
+
+private:
+    void markDirty() {
+        isDirty_ = true;
+    }
+
+    void recalculateWorldMatrix() {
+        worldMatrix_ = Matrix4x4::createTransform(
+            position_, rotation_, scale_);
+        isDirty_ = false;
+    }
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Hierarquia de Transformação</h3>
+            <div class="code-block">
+                <pre><code>
+class TransformNode {
+private:
+    TransformNode* parent_;
+    vector<TransformNode*> children_;
+    
+    Matrix4x4 localMatrix_;
+    Matrix4x4 worldMatrix_;
+    bool isLocalDirty_;
+    bool isWorldDirty_;
+
+public:
+    void setLocalPosition(const Vector3& position) {
+        // Atualiza a matriz local
+        localMatrix_ = Matrix4x4::createTranslation(position);
+        markLocalDirty();
+    }
+
+    const Matrix4x4& getWorldMatrix() {
+        if (isWorldDirty_) {
+            if (parent_ != nullptr) {
+                worldMatrix_ = parent_->getWorldMatrix() * getLocalMatrix();
+            } else {
+                worldMatrix_ = getLocalMatrix();
+            }
+            isWorldDirty_ = false;
+        }
+        return worldMatrix_;
+    }
+
+private:
+    void markLocalDirty() {
+        isLocalDirty_ = true;
+        markWorldDirtyRecursive();
+    }
+
+    void markWorldDirtyRecursive() {
+        isWorldDirty_ = true;
+        for (auto child : children_) {
+            child->markWorldDirtyRecursive();
+        }
+    }
+
+    const Matrix4x4& getLocalMatrix() {
+        if (isLocalDirty_) {
+            // Recalcula matriz local
+            isLocalDirty_ = false;
+        }
+        return localMatrix_;
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Sistema de Renderização</h3>
+            <div class="code-block">
+                <pre><code>
+class RenderComponent {
+private:
+    Mesh* mesh_;
+    Material* material_;
+    bool isVisible_;
+    bool isBoundingBoxDirty_;
+    bool isShadowVolumeDirty_;
+    BoundingBox boundingBox_;
+    ShadowVolume shadowVolume_;
+
+public:
+    void setMesh(Mesh* mesh) {
+        mesh_ = mesh;
+        markBoundingBoxDirty();
+        markShadowVolumeDirty();
+    }
+
+    const BoundingBox& getBoundingBox() {
+        if (isBoundingBoxDirty_) {
+            recalculateBoundingBox();
+        }
+        return boundingBox_;
+    }
+
+    const ShadowVolume& getShadowVolume(const Light& light) {
+        if (isShadowVolumeDirty_) {
+            recalculateShadowVolume(light);
+        }
+        return shadowVolume_;
+    }
+
+private:
+    void markBoundingBoxDirty() {
+        isBoundingBoxDirty_ = true;
+    }
+
+    void markShadowVolumeDirty() {
+        isShadowVolumeDirty_ = true;
+    }
+
+    void recalculateBoundingBox() {
+        if (mesh_) {
+            boundingBox_ = mesh_->calculateBoundingBox();
+        }
+        isBoundingBoxDirty_ = false;
+    }
+
+    void recalculateShadowVolume(const Light& light) {
+        if (mesh_ && isVisible_) {
+            shadowVolume_ = mesh_->calculateShadowVolume(light);
+        }
+        isShadowVolumeDirty_ = false;
+    }
+};
+
+// Sistema de Renderização
+class RenderSystem {
+private:
+    vector<RenderComponent*> components_;
+    bool isSceneDirty_;
+    OctTree sceneTree_;
+
+public:
+    void addComponent(RenderComponent* component) {
+        components_.push_back(component);
+        markSceneDirty();
+    }
+
+    void render(const Camera& camera) {
+        if (isSceneDirty_) {
+            rebuildSceneTree();
+        }
+
+        auto visibleComponents = sceneTree_.findVisible(camera);
+        for (auto component : visibleComponents) {
+            component->render();
+        }
+    }
+
+private:
+    void markSceneDirty() {
+        isSceneDirty_ = true;
+    }
+
+    void rebuildSceneTree() {
+        sceneTree_.clear();
+        for (auto component : components_) {
+            sceneTree_.insert(component);
+        }
+        isSceneDirty_ = false;
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Evita cálculos desnecessários</li>
+                <li>Melhora a performance em sistemas complexos</li>
+                <li>Mantém o cache de resultados automaticamente</li>
+                <li>Simplifica a lógica de atualização</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Overhead de rastreamento do estado dirty</li>
+                    <li>Complexidade em hierarquias profundas</li>
+                    <li>Possíveis problemas de performance em cascata</li>
+                    <li>Gerenciamento de dependências entre flags</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Dirty Regions: Marca apenas regiões específicas como dirty</li>
+                <li>Dirty Bits: Usa bits para rastrear múltiplos estados</li>
+                <li>Change Propagation: Propaga mudanças através de dependências</li>
+                <li>Lazy Evaluation: Combina com avaliação preguiçosa</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="data-locality.html">Data Locality</a> - Para organizar dados de forma eficiente</li>
+                <li><a href="../decoupling-patterns/observer.html">Observer</a> - Para notificar sobre mudanças</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para organizar sistemas que usam dirty flags</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Locality Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Otimização > Data Locality
+        </div>
+
+        <div class="content">
+            <h2>Data Locality Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Acelerar o acesso à memória organizando os dados para tirar proveito do cache da CPU e reduzir cache misses.</p>
+            </div>
+
+            <h3>O Problema: Cache Miss</h3>
+            <p>CPUs modernas são muito mais rápidas que a memória RAM. Para compensar, usam caches, mas quando os dados não estão no cache (cache miss), o programa precisa esperar a memória mais lenta. Dados espalhados na memória causam mais cache misses.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+// Abordagem tradicional - Dados espalhados
+class GameObject {
+    Vector3 position_;
+    Vector3 velocity_;
+    Mesh* mesh_;
+    Animation* animation_;
+    AI* ai_;
+    // ... outros dados
+};
+
+// Array de objetos - Cache unfriendly
+GameObject* objects_[MAX_OBJECTS];
+
+// Abordagem com Data Locality - Dados agrupados
+struct TransformData {
+    Vector3 positions[MAX_OBJECTS];
+    Vector3 velocities[MAX_OBJECTS];
+};
+
+struct RenderData {
+    Mesh* meshes[MAX_OBJECTS];
+    Animation* animations[MAX_OBJECTS];
+};
+
+struct AIData {
+    AI* ais[MAX_OBJECTS];
+};
+
+// Arrays contíguos - Cache friendly
+TransformData transforms_;
+RenderData renders_;
+AIData ai_;
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Partículas</h3>
+            <div class="code-block">
+                <pre><code>
+// Antes - Orientado a Objetos tradicional
+class Particle {
+    Vector3 position;
+    Vector3 velocity;
+    float lifetime;
+    Color color;
+    float size;
+};
+
+class ParticleSystem {
+    std::vector<Particle*> particles_;
+
+    void updateParticles(float dt) {
+        for (auto particle : particles_) {
+            particle->position += particle->velocity * dt;
+            particle->lifetime -= dt;
+            // ... outras atualizações
+        }
+    }
+};
+
+// Depois - Data Oriented Design
+class ParticleSystem {
+    static const int MAX_PARTICLES = 10000;
+    
+    // Dados agrupados por tipo
+    struct ParticleData {
+        Vector3 positions[MAX_PARTICLES];
+        Vector3 velocities[MAX_PARTICLES];
+        float lifetimes[MAX_PARTICLES];
+        Color colors[MAX_PARTICLES];
+        float sizes[MAX_PARTICLES];
+        int count;
+    };
+
+    ParticleData particles_;
+
+    void updateParticles(float dt) {
+        for (int i = 0; i < particles_.count; i++) {
+            particles_.positions[i] += particles_.velocities[i] * dt;
+            particles_.lifetimes[i] -= dt;
+            // ... outras atualizações
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Sistemas Independentes</h3>
+            <div class="code-block">
+                <pre><code>
+// Sistema de Física
+class PhysicsSystem {
+    struct PhysicsData {
+        Vector3 positions[MAX_OBJECTS];
+        Vector3 velocities[MAX_OBJECTS];
+        float masses[MAX_OBJECTS];
+        bool active[MAX_OBJECTS];
+        int count;
+    };
+
+    PhysicsData physics_;
+
+    void update(float dt) {
+        // Processa em blocos para melhor uso do cache
+        static const int BLOCK_SIZE = 64;
+        for (int start = 0; start < physics_.count; start += BLOCK_SIZE) {
+            int end = min(start + BLOCK_SIZE, physics_.count);
+            updateBlock(start, end, dt);
+        }
+    }
+
+    void updateBlock(int start, int end, float dt) {
+        for (int i = start; i < end; i++) {
+            if (!physics_.active[i]) continue;
+            
+            physics_.velocities[i] += GRAVITY * dt;
+            physics_.positions[i] += physics_.velocities[i] * dt;
+        }
+    }
+};
+
+// Sistema de Renderização
+class RenderSystem {
+    struct RenderData {
+        Matrix4x4 transforms[MAX_OBJECTS];
+        Mesh* meshes[MAX_OBJECTS];
+        Material* materials[MAX_OBJECTS];
+        bool visible[MAX_OBJECTS];
+        int count;
+    };
+
+    RenderData render_;
+
+    void render() {
+        // Agrupa por material para reduzir state changes
+        std::sort(render_.materials, render_.materials + render_.count);
+        
+        Material* currentMaterial = nullptr;
+        for (int i = 0; i < render_.count; i++) {
+            if (!render_.visible[i]) continue;
+
+            if (render_.materials[i] != currentMaterial) {
+                currentMaterial = render_.materials[i];
+                currentMaterial->bind();
+            }
+
+            render_.meshes[i]->draw(render_.transforms[i]);
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Melhor uso do cache da CPU</li>
+                <li>Redução de cache misses</li>
+                <li>Melhor performance em loops</li>
+                <li>Possibilidade de vetorização</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Código menos orientado a objetos</li>
+                    <li>Mais complexidade no gerenciamento de memória</li>
+                    <li>Pode dificultar a manutenção</li>
+                    <li>Precisa balancear com outros padrões</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Hot/Cold Splitting: Separa dados frequentemente acessados dos raramente acessados</li>
+                <li>Struct of Arrays vs Array of Structs: Diferentes organizações de dados</li>
+                <li>Memory Pools: Alocação em blocos contíguos</li>
+                <li>Component Arrays: Arrays separados por componente</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="object-pool.html">Object Pool</a> - Para alocação eficiente de objetos</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Pode ser combinado com Data Locality</li>
+                <li><a href="dirty-flag.html">Dirty Flag</a> - Para atualização eficiente</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

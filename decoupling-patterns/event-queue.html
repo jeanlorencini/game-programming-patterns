@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Queue Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Desacoplamento > Event Queue
+        </div>
+
+        <div class="content">
+            <h2>Event Queue Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Desacoplar o momento em que algo acontece do momento em que é processado, usando uma fila de eventos que podem ser processados posteriormente.</p>
+            </div>
+
+            <h3>O Problema: Comunicação Assíncrona</h3>
+            <p>Em jogos, muitas coisas acontecem simultaneamente e nem sempre queremos processar tudo imediatamente. Por exemplo, quando um inimigo morre, queremos tocar um som, criar partículas, dar pontos ao jogador, etc. Fazer tudo isso de uma vez pode causar problemas de performance ou sincronização.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Event {
+public:
+    enum Type {
+        ENEMY_DIED,
+        ACHIEVEMENT_UNLOCKED,
+        LEVEL_COMPLETED,
+        PLAYER_DAMAGED
+        // ... outros tipos
+    };
+
+    Event(Type type, void* data = nullptr)
+        : type_(type), data_(data) {}
+
+    Type type() const { return type_; }
+    void* data() const { return data_; }
+
+private:
+    Type type_;
+    void* data_;
+};
+
+class EventQueue {
+public:
+    void push(const Event& event) {
+        pending_.push_back(event);
+    }
+
+    void update() {
+        // Troca as filas
+        processed_ = pending_;
+        pending_.clear();
+
+        // Processa eventos
+        for (const Event& event : processed_) {
+            handleEvent(event);
+        }
+    }
+
+private:
+    void handleEvent(const Event& event) {
+        switch (event.type()) {
+            case Event::ENEMY_DIED: {
+                auto* enemy = static_cast<Enemy*>(event.data());
+                playSound("death.wav");
+                spawnParticles(enemy->position());
+                addScore(100);
+                break;
+            }
+            // ... outros casos
+        }
+    }
+
+    vector<Event> pending_;
+    vector<Event> processed_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Conquistas</h3>
+            <div class="code-block">
+                <pre><code>
+struct AchievementData {
+    const char* name;
+    const char* description;
+    int score;
+};
+
+class AchievementManager {
+public:
+    void onEvent(const Event& event) {
+        switch (event.type()) {
+            case Event::ENEMY_DIED: {
+                enemiesKilled_++;
+                checkKillCountAchievements();
+                break;
+            }
+            case Event::PLAYER_DAMAGED: {
+                auto* damage = static_cast<DamageInfo*>(event.data());
+                if (damage->amount > 100) {
+                    unlockAchievement("tank", "Sobreviva a um golpe forte!");
+                }
+                break;
+            }
+        }
+    }
+
+private:
+    void checkKillCountAchievements() {
+        if (enemiesKilled_ == 100) {
+            unlockAchievement("hunter", "Mate 100 inimigos!");
+        }
+    }
+
+    int enemiesKilled_ = 0;
+};
+
+// Uso
+EventQueue queue;
+AchievementManager achievements;
+
+void gameLoop() {
+    // Coleta eventos durante o frame
+    if (enemy->health <= 0) {
+        queue.push(Event(Event::ENEMY_DIED, enemy));
+    }
+
+    // Processa eventos no final do frame
+    queue.update();
+}
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Eventos com Prioridade</h3>
+            <div class="code-block">
+                <pre><code>
+class PriorityEvent {
+public:
+    PriorityEvent(Event event, int priority)
+        : event_(event), priority_(priority) {}
+
+    bool operator<(const PriorityEvent& other) const {
+        return priority_ < other.priority_;
+    }
+
+    const Event& event() const { return event_; }
+
+private:
+    Event event_;
+    int priority_;
+};
+
+class PriorityEventQueue {
+public:
+    void push(const Event& event, int priority) {
+        pending_.push(PriorityEvent(event, priority));
+    }
+
+    void update() {
+        while (!pending_.empty()) {
+            const Event& event = pending_.top().event();
+            handleEvent(event);
+            pending_.pop();
+        }
+    }
+
+private:
+    priority_queue<PriorityEvent> pending_;
+};
+
+// Uso
+PriorityEventQueue queue;
+
+// Eventos críticos processados primeiro
+queue.push(Event(Event::PLAYER_DIED), 100);
+queue.push(Event(Event::ENEMY_SPAWNED), 50);
+queue.push(Event(Event::COIN_COLLECTED), 10);
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Desacopla o timing dos eventos</li>
+                <li>Melhora a performance distribuindo o processamento</li>
+                <li>Facilita o debug e logging de eventos</li>
+                <li>Permite priorização de eventos</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Gerenciamento de memória dos dados dos eventos</li>
+                    <li>Ordem de processamento dos eventos</li>
+                    <li>Tamanho da fila em momentos de pico</li>
+                    <li>Eventos que geram outros eventos</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Eventos com Tempo: Eventos que são processados em um momento específico</li>
+                <li>Eventos com Callback: Eventos que chamam funções específicas</li>
+                <li>Eventos com Filtro: Eventos que podem ser filtrados antes do processamento</li>
+                <li>Eventos em Rede: Eventos que são sincronizados entre máquinas</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/observer.html">Observer</a> - Uma alternativa síncrona para comunicação</li>
+                <li><a href="../design-patterns/command.html">Command</a> - Para encapsular ações em eventos</li>
+                <li><a href="service-locator.html">Service Locator</a> - Para localizar handlers de eventos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

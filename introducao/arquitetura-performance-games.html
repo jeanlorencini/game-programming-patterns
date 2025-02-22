@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura e Performance em Games - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Introdução > Arquitetura e Performance em Games
+        </div>
+
+        <div class="content">
+            <h2>Arquitetura e Performance em Games</h2>
+            
+            <div class="note">
+                <h3>Visão Geral</h3>
+                <p>A arquitetura de software em jogos é um equilíbrio delicado entre design limpo e performance. Este capítulo explora como alcançar esse equilíbrio.</p>
+            </div>
+
+            <h3>O Desafio da Arquitetura em Games</h3>
+            <p>Desenvolver jogos é diferente de desenvolver outros tipos de software. Enquanto a maioria dos aplicativos pode priorizar a clareza do código e a manutenibilidade, jogos precisam equilibrar isso com:</p>
+            <ul>
+                <li>Performance em tempo real</li>
+                <li>Gerenciamento eficiente de recursos</li>
+                <li>Complexidade dos sistemas interativos</li>
+                <li>Requisitos de hardware específicos</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Exemplo de Compromisso entre Design e Performance</h3>
+                <div class="code-block">
+                    <pre><code>
+// Abordagem orientada a objetos "pura"
+public class GameObject {
+    private Vector3 position;
+    private Vector3 velocity;
+    
+    public void Update(float deltaTime) {
+        position += velocity * deltaTime;
+    }
+}
+
+// Abordagem otimizada para performance
+public class GameObjectSystem {
+    private Vector3[] positions;
+    private Vector3[] velocities;
+    
+    public void UpdateAll(float deltaTime) {
+        for (int i = 0; i < positions.Length; i++) {
+            positions[i] += velocities[i] * deltaTime;
+        }
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Princípios Fundamentais</h3>
+            <p>Para criar uma arquitetura eficiente em jogos, considere:</p>
+            <ul>
+                <li>Localidade de dados para melhor performance de cache</li>
+                <li>Sistemas de componentes para flexibilidade</li>
+                <li>Padrões de atualização eficientes</li>
+                <li>Gerenciamento de memória otimizado</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Armadilhas Comuns</h3>
+                <p>Evite estas armadilhas comuns ao projetar a arquitetura do seu jogo:</p>
+                <ul>
+                    <li>Abstração excessiva que impacta a performance</li>
+                    <li>Otimização prematura que complica o código</li>
+                    <li>Ignorar a localidade de dados</li>
+                    <li>Dependências circulares entre sistemas</li>
+                </ul>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../optimization-patterns/data-locality.html">Data Locality</a> - Para otimização de acesso à memória</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para arquitetura flexível</li>
+                <li><a href="../sequencing-patterns/update-method.html">Update Method</a> - Para lógica de atualização eficiente</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

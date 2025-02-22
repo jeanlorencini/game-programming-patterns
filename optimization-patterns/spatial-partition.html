@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spatial Partition Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Otimização > Spatial Partition
+        </div>
+
+        <div class="content">
+            <h2>Spatial Partition Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Otimizar a busca de objetos em um espaço dividindo-o em regiões e mantendo o registro de quais objetos estão em cada região, reduzindo drasticamente o número de comparações necessárias.</p>
+            </div>
+
+            <h3>O Problema: Busca Espacial</h3>
+            <p>Em jogos, frequentemente precisamos encontrar objetos próximos a uma posição (detecção de colisão, IA, renderização). Verificar todos os objetos contra todos é O(n²) e muito ineficiente para jogos com muitos objetos.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica: Grid</h3>
+                <div class="code-block">
+                    <pre><code>
+class SpatialGrid {
+private:
+    static const int CELL_SIZE = 100;
+    static const int GRID_SIZE = 64;
+
+    struct Cell {
+        vector<GameObject*> objects;
+    };
+
+    Cell grid_[GRID_SIZE][GRID_SIZE];
+
+    Vector2 worldToGrid(const Vector2& position) {
+        return Vector2(
+            clamp((int)(position.x / CELL_SIZE), 0, GRID_SIZE - 1),
+            clamp((int)(position.y / CELL_SIZE), 0, GRID_SIZE - 1)
+        );
+    }
+
+public:
+    void insert(GameObject* object) {
+        Vector2 pos = worldToGrid(object->position);
+        grid_[pos.x][pos.y].objects.push_back(object);
+    }
+
+    void remove(GameObject* object) {
+        Vector2 pos = worldToGrid(object->position);
+        auto& cell = grid_[pos.x][pos.y].objects;
+        
+        auto it = std::find(cell.begin(), cell.end(), object);
+        if (it != cell.end()) {
+            cell.erase(it);
+        }
+    }
+
+    vector<GameObject*> findNearby(const Vector2& position, float radius) {
+        vector<GameObject*> result;
+        Vector2 gridPos = worldToGrid(position);
+        int cellRadius = (int)(radius / CELL_SIZE) + 1;
+
+        // Verifica células vizinhas
+        for (int x = -cellRadius; x <= cellRadius; x++) {
+            for (int y = -cellRadius; y <= cellRadius; y++) {
+                int gx = gridPos.x + x;
+                int gy = gridPos.y + y;
+
+                if (gx >= 0 && gx < GRID_SIZE && 
+                    gy >= 0 && gy < GRID_SIZE) {
+                    for (auto obj : grid_[gx][gy].objects) {
+                        if (distance(position, obj->position) <= radius) {
+                            result.push_back(obj);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Quadtree</h3>
+            <div class="code-block">
+                <pre><code>
+class QuadTree {
+private:
+    static const int MAX_OBJECTS = 10;
+    static const int MAX_LEVELS = 5;
+
+    struct Node {
+        AABB bounds;
+        vector<GameObject*> objects;
+        Node* children[4];
+        int level;
+
+        Node(const AABB& bounds, int level)
+            : bounds(bounds), level(level) {
+            for (int i = 0; i < 4; i++) {
+                children[i] = nullptr;
+            }
+        }
+
+        bool isLeaf() const {
+            return children[0] == nullptr;
+        }
+
+        void split() {
+            if (level >= MAX_LEVELS) return;
+
+            Vector2 center = bounds.center();
+            Vector2 quarterSize = bounds.size * 0.5f;
+
+            children[0] = new Node(AABB(
+                Vector2(bounds.min.x, bounds.min.y),
+                Vector2(center.x, center.y)), level + 1);
+
+            children[1] = new Node(AABB(
+                Vector2(center.x, bounds.min.y),
+                Vector2(bounds.max.x, center.y)), level + 1);
+
+            children[2] = new Node(AABB(
+                Vector2(bounds.min.x, center.y),
+                Vector2(center.x, bounds.max.y)), level + 1);
+
+            children[3] = new Node(AABB(
+                Vector2(center.x, center.y),
+                Vector2(bounds.max.x, bounds.max.y)), level + 1);
+
+            // Redistribui objetos para os filhos
+            for (auto obj : objects) {
+                for (int i = 0; i < 4; i++) {
+                    if (children[i]->bounds.contains(obj->position)) {
+                        children[i]->objects.push_back(obj);
+                        break;
+                    }
+                }
+            }
+
+            objects.clear();
+        }
+    };
+
+    Node* root_;
+
+public:
+    QuadTree(const AABB& worldBounds)
+        : root_(new Node(worldBounds, 0)) {}
+
+    void insert(GameObject* object) {
+        insertRecursive(root_, object);
+    }
+
+    void remove(GameObject* object) {
+        removeRecursive(root_, object);
+    }
+
+    vector<GameObject*> findNearby(const Vector2& position, float radius) {
+        vector<GameObject*> result;
+        Circle queryCircle(position, radius);
+        findNearbyRecursive(root_, queryCircle, result);
+        return result;
+    }
+
+private:
+    void insertRecursive(Node* node, GameObject* object) {
+        if (!node->bounds.contains(object->position)) {
+            return;
+        }
+
+        if (node->isLeaf()) {
+            node->objects.push_back(object);
+            
+            if (node->objects.size() > MAX_OBJECTS && 
+                node->level < MAX_LEVELS) {
+                node->split();
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                if (node->children[i]->bounds.contains(object->position)) {
+                    insertRecursive(node->children[i], object);
+                    break;
+                }
+            }
+        }
+    }
+
+    void findNearbyRecursive(Node* node, const Circle& query,
+                            vector<GameObject*>& result) {
+        if (!node->bounds.intersects(query)) {
+            return;
+        }
+
+        for (auto obj : node->objects) {
+            if (distance(query.center, obj->position) <= query.radius) {
+                result.push_back(obj);
+            }
+        }
+
+        if (!node->isLeaf()) {
+            for (int i = 0; i < 4; i++) {
+                findNearbyRecursive(node->children[i], query, result);
+            }
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Octree para Renderização</h3>
+            <div class="code-block">
+                <pre><code>
+class OctreeRenderer {
+private:
+    struct OctreeNode {
+        AABB bounds;
+        vector<RenderObject*> objects;
+        OctreeNode* children[8];
+        bool isVisible;
+
+        void updateVisibility(const Frustum& frustum) {
+            isVisible = frustum.intersects(bounds);
+            
+            if (!isVisible) return;
+
+            if (!isLeaf()) {
+                for (int i = 0; i < 8; i++) {
+                    children[i]->updateVisibility(frustum);
+                }
+            }
+        }
+
+        void render(RenderSystem& renderer) {
+            if (!isVisible) return;
+
+            // Renderiza objetos neste nó
+            for (auto obj : objects) {
+                renderer.submit(obj);
+            }
+
+            // Renderiza filhos
+            if (!isLeaf()) {
+                for (int i = 0; i < 8; i++) {
+                    children[i]->render(renderer);
+                }
+            }
+        }
+    };
+
+    OctreeNode* root_;
+    RenderSystem& renderer_;
+
+public:
+    void update(const Camera& camera) {
+        Frustum frustum = camera.getFrustum();
+        root_->updateVisibility(frustum);
+    }
+
+    void render() {
+        root_->render(renderer_);
+    }
+
+    void insert(RenderObject* object) {
+        insertRecursive(root_, object);
+    }
+
+    void remove(RenderObject* object) {
+        removeRecursive(root_, object);
+    }
+};
+
+// Sistema de Física com Grid Hierárquico
+class PhysicsSystem {
+private:
+    struct GridLevel {
+        int cellSize;
+        vector<GameObject*> cells[GRID_SIZE][GRID_SIZE];
+    };
+
+    vector<GridLevel> levels_;
+
+public:
+    PhysicsSystem() {
+        // Inicializa grids com diferentes tamanhos de célula
+        levels_.resize(4);
+        levels_[0].cellSize = 8;    // Objetos pequenos
+        levels_[1].cellSize = 32;   // Objetos médios
+        levels_[2].cellSize = 128;  // Objetos grandes
+        levels_[3].cellSize = 512;  // Objetos muito grandes
+    }
+
+    void insert(GameObject* object) {
+        // Insere no nível apropriado baseado no tamanho
+        float size = object->getBoundingRadius();
+        for (int i = 0; i < levels_.size(); i++) {
+            if (size <= levels_[i].cellSize) {
+                insertInLevel(i, object);
+                break;
+            }
+        }
+    }
+
+    void update() {
+        // Atualiza colisões em cada nível
+        for (int level = 0; level < levels_.size(); level++) {
+            updateCollisions(level);
+        }
+    }
+
+private:
+    void updateCollisions(int level) {
+        auto& grid = levels_[level];
+        
+        // Para cada célula
+        for (int x = 0; x < GRID_SIZE; x++) {
+            for (int y = 0; y < GRID_SIZE; y++) {
+                auto& cell = grid.cells[x][y];
+                
+                // Testa colisões entre objetos na mesma célula
+                for (size_t i = 0; i < cell.size(); i++) {
+                    for (size_t j = i + 1; j < cell.size(); j++) {
+                        testCollision(cell[i], cell[j]);
+                    }
+                }
+
+                // Testa com células vizinhas
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (dx == 0 && dy == 0) continue;
+
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (nx >= 0 && nx < GRID_SIZE &&
+                            ny >= 0 && ny < GRID_SIZE) {
+                            auto& neighbor = grid.cells[nx][ny];
+                            
+                            for (auto obj1 : cell) {
+                                for (auto obj2 : neighbor) {
+                                    testCollision(obj1, obj2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Reduz drasticamente o número de comparações</li>
+                <li>Melhora a performance em cenas grandes</li>
+                <li>Facilita culling e otimizações espaciais</li>
+                <li>Suporta diferentes escalas de objetos</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Overhead de manutenção da estrutura</li>
+                    <li>Escolha do tamanho das células/regiões</li>
+                    <li>Custo de reconstrução em cenas dinâmicas</li>
+                    <li>Complexidade adicional no código</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Grid Uniforme: Divisão regular do espaço</li>
+                <li>Quadtree/Octree: Divisão hierárquica adaptativa</li>
+                <li>BSP Tree: Divisão binária do espaço</li>
+                <li>Spatial Hashing: Hash de posições para células</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="data-locality.html">Data Locality</a> - Para organizar dados espacialmente</li>
+                <li><a href="object-pool.html">Object Pool</a> - Para gerenciar objetos em partições</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para sistemas que usam particionamento</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

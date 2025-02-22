@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototype Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > Prototype
+        </div>
+
+        <div class="content">
+            <h2>Prototype Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Especificar os tipos de objetos a serem criados usando uma instância-protótipo e criar novos objetos pela clonagem deste protótipo.</p>
+            </div>
+
+            <h3>O Problema: Criação de Inimigos</h3>
+            <p>Em jogos, frequentemente precisamos criar muitas instâncias de objetos similares, como inimigos, itens ou projéteis. Cada instância pode ter pequenas variações, mas compartilha a maioria das características com outras do mesmo tipo.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Monster {
+public:
+    virtual ~Monster() {}
+    virtual Monster* clone() const = 0;
+    virtual void initialize(int health, int speed) = 0;
+};
+
+class Ghost : public Monster {
+public:
+    Monster* clone() const override {
+        return new Ghost(*this);
+    }
+
+    void initialize(int health, int speed) override {
+        health_ = health;
+        speed_ = speed;
+    }
+
+private:
+    int health_;
+    int speed_;
+};
+
+class MonsterSpawner {
+public:
+    MonsterSpawner() {
+        // Configura os protótipos
+        ghostPrototype_ = new Ghost();
+    }
+
+    Monster* spawnGhost() {
+        Monster* ghost = ghostPrototype_->clone();
+        ghost->initialize(15, 3); // Valores específicos
+        return ghost;
+    }
+
+private:
+    Monster* ghostPrototype_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Permite criar objetos sem conhecer sua classe concreta</li>
+                <li>Reduz o número de subclasses necessárias</li>
+                <li>Configuração dinâmica de objetos em tempo de execução</li>
+                <li>Compartilhamento de comportamento entre objetos similares</li>
+            </ul>
+
+            <h3>Aplicações em Jogos</h3>
+            <p>O padrão Prototype é particularmente útil em jogos para:</p>
+            <ul>
+                <li>Sistemas de spawn de inimigos</li>
+                <li>Geração de itens e power-ups</li>
+                <li>Criação de projéteis e efeitos</li>
+                <li>Sistemas de clonagem de unidades</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Gerenciamento de memória ao clonar objetos</li>
+                    <li>Cópia profunda vs. cópia superficial</li>
+                    <li>Inicialização correta dos clones</li>
+                    <li>Ciclo de vida dos protótipos</li>
+                </ul>
+            </div>
+
+            <h3>Exemplo Avançado: Sistema de Spawn com Variações</h3>
+            <div class="code-block">
+                <pre><code>
+class MonsterPrototype {
+public:
+    virtual ~MonsterPrototype() {}
+    virtual Monster* spawn(const SpawnPoint& point) = 0;
+    virtual void modifyStats(float difficulty) = 0;
+};
+
+class GhostPrototype : public MonsterPrototype {
+public:
+    Monster* spawn(const SpawnPoint& point) override {
+        Ghost* ghost = new Ghost(*this);
+        ghost->setPosition(point.position);
+        ghost->setLevel(point.level);
+        return ghost;
+    }
+
+    void modifyStats(float difficulty) override {
+        baseHealth_ *= difficulty;
+        baseSpeed_ *= (difficulty * 0.8f);
+    }
+
+private:
+    float baseHealth_;
+    float baseSpeed_;
+};
+                </code></pre>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Frequentemente usado com Prototype para gerenciar memória</li>
+                <li><a href="flyweight.html">Flyweight</a> - Pode ser combinado para compartilhar estados entre clones</li>
+                <li><a href="factory-method.html">Factory Method</a> - Alternativa para criação de objetos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

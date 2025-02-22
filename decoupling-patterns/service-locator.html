@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Locator Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Desacoplamento > Service Locator
+        </div>
+
+        <div class="content">
+            <h2>Service Locator Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Fornecer um ponto central de acesso para serviços sem acoplar o código cliente diretamente às implementações concretas, permitindo que os serviços sejam trocados em tempo de execução.</p>
+            </div>
+
+            <h3>O Problema: Acesso a Serviços</h3>
+            <p>Em jogos, precisamos acessar vários serviços (áudio, física, logging, etc.) de diferentes partes do código. Usar singletons ou variáveis globais cria acoplamento forte e dificulta testes e modificações.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+// Interface do serviço de áudio
+class IAudioService {
+public:
+    virtual ~IAudioService() {}
+    virtual void playSound(const char* name) = 0;
+    virtual void stopSound(const char* name) = 0;
+    virtual void setVolume(float volume) = 0;
+};
+
+// Implementação nula para quando não há serviço
+class NullAudioService : public IAudioService {
+public:
+    void playSound(const char* name) override {}
+    void stopSound(const char* name) override {}
+    void setVolume(float volume) override {}
+};
+
+// O Service Locator
+class AudioLocator {
+public:
+    static void initialize() {
+        service_ = &nullService_;
+    }
+
+    static IAudioService& getAudio() {
+        return *service_;
+    }
+
+    static void provide(IAudioService* service) {
+        if (service == nullptr) {
+            service_ = &nullService_;
+        } else {
+            service_ = service;
+        }
+    }
+
+private:
+    static IAudioService* service_;
+    static NullAudioService nullService_;
+};
+
+// Inicialização das variáveis estáticas
+IAudioService* AudioLocator::service_ = nullptr;
+NullAudioService AudioLocator::nullService_;
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Áudio</h3>
+            <div class="code-block">
+                <pre><code>
+// Implementação concreta do serviço de áudio
+class ConsoleAudioService : public IAudioService {
+public:
+    void playSound(const char* name) override {
+        std::cout << "Playing sound: " << name << std::endl;
+    }
+
+    void stopSound(const char* name) override {
+        std::cout << "Stopping sound: " << name << std::endl;
+    }
+
+    void setVolume(float volume) override {
+        std::cout << "Setting volume to: " << volume << std::endl;
+    }
+};
+
+// Implementação com logging
+class LoggedAudioService : public IAudioService {
+public:
+    LoggedAudioService(IAudioService* wrapped)
+        : wrapped_(wrapped) {}
+
+    void playSound(const char* name) override {
+        std::cout << "LOG: Playing " << name << std::endl;
+        wrapped_->playSound(name);
+    }
+
+    void stopSound(const char* name) override {
+        std::cout << "LOG: Stopping " << name << std::endl;
+        wrapped_->stopSound(name);
+    }
+
+    void setVolume(float volume) override {
+        std::cout << "LOG: Volume " << volume << std::endl;
+        wrapped_->setVolume(volume);
+    }
+
+private:
+    IAudioService* wrapped_;
+};
+
+// Uso
+void initializeGame() {
+    AudioLocator::initialize(); // Configura o serviço nulo
+
+    // Configura o serviço real
+    IAudioService* service = new ConsoleAudioService();
+    
+    // Opcionalmente adiciona logging
+    service = new LoggedAudioService(service);
+    
+    AudioLocator::provide(service);
+}
+
+void playGameSound() {
+    // Usa o serviço sem saber a implementação
+    AudioLocator::getAudio().playSound("explosion.wav");
+}
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Múltiplos Serviços</h3>
+            <div class="code-block">
+                <pre><code>
+// Locator genérico para qualquer serviço
+template<typename T>
+class ServiceLocator {
+public:
+    static void initialize() {
+        service_ = nullptr;
+    }
+
+    static T& getService() {
+        assert(service_ != nullptr);
+        return *service_;
+    }
+
+    static void provide(T* service) {
+        if (service == nullptr) {
+            // Poderia usar um serviço nulo específico aqui
+            service_ = nullptr;
+        } else {
+            service_ = service;
+        }
+    }
+
+private:
+    static T* service_;
+};
+
+// Uso com múltiplos serviços
+class IPhysicsService { /* ... */ };
+class INetworkService { /* ... */ };
+class IInputService { /* ... */ };
+
+using PhysicsLocator = ServiceLocator<IPhysicsService>;
+using NetworkLocator = ServiceLocator<INetworkService>;
+using InputLocator = ServiceLocator<IInputService>;
+
+// Configuração
+void setupServices() {
+    PhysicsLocator::provide(new PhysicsService());
+    NetworkLocator::provide(new NetworkService());
+    InputLocator::provide(new InputService());
+}
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Desacopla o código cliente das implementações dos serviços</li>
+                <li>Permite trocar serviços em tempo de execução</li>
+                <li>Facilita testes com serviços mock</li>
+                <li>Suporta decoradores e logging</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Ainda é um ponto de acoplamento global</li>
+                    <li>Ordem de inicialização dos serviços</li>
+                    <li>Gerenciamento de memória dos serviços</li>
+                    <li>Thread safety em ambientes multi-thread</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Service Registry: Mantém múltiplos serviços do mesmo tipo</li>
+                <li>Lazy Initialization: Serviços criados sob demanda</li>
+                <li>Scoped Services: Serviços com escopo limitado</li>
+                <li>Hierarchical Services: Serviços em hierarquia</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/singleton.html">Singleton</a> - Uma alternativa mais simples mas menos flexível</li>
+                <li><a href="../design-patterns/factory-method.html">Factory Method</a> - Para criar instâncias dos serviços</li>
+                <li><a href="event-queue.html">Event Queue</a> - Pode usar Service Locator para acessar handlers</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double Buffer Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Sequenciamento > Double Buffer
+        </div>
+
+        <div class="content">
+            <h2>Double Buffer Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Evitar artefatos visuais e inconsistências ao atualizar o estado do jogo usando dois buffers: um para leitura e outro para escrita.</p>
+            </div>
+
+            <h3>O Problema: Renderização e Atualização</h3>
+            <p>Em jogos, frequentemente precisamos atualizar e renderizar muitos objetos simultaneamente. Se atualizarmos e renderizarmos diretamente na tela, podemos ver artefatos visuais indesejados como tearing ou flickering.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class GraphicsBuffer {
+public:
+    GraphicsBuffer() {
+        // Aloca memória para o buffer
+        pixels_ = new Color[WIDTH * HEIGHT];
+    }
+
+    ~GraphicsBuffer() {
+        delete[] pixels_;
+    }
+
+    void clear() {
+        for (int i = 0; i < WIDTH * HEIGHT; i++) {
+            pixels_[i] = BLACK;
+        }
+    }
+
+    void draw(int x, int y, Color color) {
+        pixels_[y * WIDTH + x] = color;
+    }
+
+private:
+    Color* pixels_;
+};
+
+class DoubleBuffer {
+public:
+    DoubleBuffer() 
+        : currentBuffer_(0) {
+        buffers_[0] = new GraphicsBuffer();
+        buffers_[1] = new GraphicsBuffer();
+    }
+
+    ~DoubleBuffer() {
+        delete buffers_[0];
+        delete buffers_[1];
+    }
+
+    void clear() {
+        getWriteBuffer().clear();
+    }
+
+    void draw(int x, int y, Color color) {
+        getWriteBuffer().draw(x, y, color);
+    }
+
+    void swap() {
+        currentBuffer_ = (currentBuffer_ + 1) % 2;
+    }
+
+private:
+    GraphicsBuffer& getWriteBuffer() {
+        return *buffers_[(currentBuffer_ + 1) % 2];
+    }
+
+    GraphicsBuffer& getReadBuffer() {
+        return *buffers_[currentBuffer_];
+    }
+
+    GraphicsBuffer* buffers_[2];
+    int currentBuffer_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Uso Típico</h3>
+            <div class="code-block">
+                <pre><code>
+class Game {
+public:
+    void update() {
+        // Limpa o buffer de escrita
+        graphics_.clear();
+
+        // Desenha todos os objetos no buffer de escrita
+        for (auto& object : gameObjects_) {
+            object.render(graphics_);
+        }
+
+        // Troca os buffers
+        graphics_.swap();
+    }
+
+private:
+    DoubleBuffer graphics_;
+    std::vector<GameObject> gameObjects_;
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Elimina artefatos visuais durante a renderização</li>
+                <li>Permite atualizações atômicas do estado visual</li>
+                <li>Simplifica a sincronização entre renderização e lógica</li>
+                <li>Melhora a performance em sistemas multi-thread</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Uso adicional de memória (dois buffers)</li>
+                    <li>Sincronização correta entre buffers</li>
+                    <li>Gerenciamento de recursos gráficos</li>
+                    <li>Timing da troca de buffers</li>
+                </ul>
+            </div>
+
+            <h3>Aplicações</h3>
+            <p>O padrão Double Buffer é usado em várias situações:</p>
+            <ul>
+                <li>Renderização gráfica</li>
+                <li>Processamento de áudio</li>
+                <li>Atualização de física</li>
+                <li>Animação de sprites</li>
+                <li>Atualizações de estado em rede</li>
+            </ul>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Triple Buffering: Usa três buffers para melhor performance</li>
+                <li>Page Flipping: Variação específica para hardware gráfico</li>
+                <li>Ring Buffer: Múltiplos buffers em rotação</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="game-loop.html">Game Loop</a> - Frequentemente usado em conjunto para controle de timing</li>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Para gerenciar os buffers de forma eficiente</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para organizar sistemas que usam double buffering</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

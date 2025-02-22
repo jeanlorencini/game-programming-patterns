@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Method Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Sequenciamento > Update Method
+        </div>
+
+        <div class="content">
+            <h2>Update Method Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Simular comportamentos independentes e simultâneos em um jogo através de um método de atualização que é chamado a cada frame para cada objeto que precisa executar comportamento ao longo do tempo.</p>
+            </div>
+
+            <h3>O Problema: Simulação de Objetos</h3>
+            <p>Em jogos, temos muitos objetos que precisam executar comportamentos ao longo do tempo: inimigos se movendo, projéteis voando, power-ups pulsando, etc. Cada objeto tem sua própria lógica de atualização, mas todos precisam ser atualizados em sincronia com o game loop.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Entity {
+public:
+    virtual ~Entity() {}
+    virtual void update(float deltaTime) = 0;
+};
+
+class World {
+public:
+    void update(float deltaTime) {
+        for (Entity* entity : entities_) {
+            entity->update(deltaTime);
+        }
+    }
+
+private:
+    std::vector<Entity*> entities_;
+};
+
+class Projectile : public Entity {
+public:
+    virtual void update(float deltaTime) override {
+        position_ += velocity_ * deltaTime;
+        timeAlive_ += deltaTime;
+
+        if (timeAlive_ > maxLifetime_) {
+            destroy();
+        }
+    }
+
+private:
+    Vector2 position_;
+    Vector2 velocity_;
+    float timeAlive_;
+    float maxLifetime_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Partículas</h3>
+            <div class="code-block">
+                <pre><code>
+class Particle : public Entity {
+public:
+    Particle(Vector2 position, Vector2 velocity, float lifetime)
+        : position_(position)
+        , velocity_(velocity)
+        , lifetime_(lifetime)
+        , currentTime_(0.0f)
+    {}
+
+    virtual void update(float deltaTime) override {
+        currentTime_ += deltaTime;
+        if (currentTime_ >= lifetime_) {
+            active_ = false;
+            return;
+        }
+
+        velocity_ += GRAVITY * deltaTime;
+        position_ += velocity_ * deltaTime;
+
+        // Calcula a cor baseada no tempo de vida
+        float alpha = 1.0f - (currentTime_ / lifetime_);
+        color_ = Color(1.0f, 1.0f, 1.0f, alpha);
+    }
+
+private:
+    Vector2 position_;
+    Vector2 velocity_;
+    float lifetime_;
+    float currentTime_;
+    bool active_ = true;
+    Color color_;
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Encapsula comportamento específico em cada objeto</li>
+                <li>Facilita a adição de novos tipos de objetos</li>
+                <li>Permite simulação de comportamentos independentes</li>
+                <li>Simplifica o gerenciamento de estado ao longo do tempo</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Ordem de atualização pode afetar o comportamento</li>
+                    <li>Objetos podem precisar ser removidos durante a atualização</li>
+                    <li>Performance com muitos objetos</li>
+                    <li>Sincronização em sistemas multi-thread</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Fixed Update: Atualização em intervalos fixos para física</li>
+                <li>Priority Update: Ordem de atualização baseada em prioridade</li>
+                <li>Component Update: Atualização de componentes individuais</li>
+                <li>Delayed Update: Atualizações agendadas para o futuro</li>
+            </ul>
+
+            <h3>Exemplo Avançado: Sistema de Componentes</h3>
+            <div class="code-block">
+                <pre><code>
+class Component {
+public:
+    virtual ~Component() {}
+    virtual void update(float deltaTime) = 0;
+};
+
+class GameObject {
+public:
+    void addComponent(Component* component) {
+        components_.push_back(component);
+    }
+
+    void update(float deltaTime) {
+        for (Component* component : components_) {
+            component->update(deltaTime);
+        }
+    }
+
+private:
+    std::vector<Component*> components_;
+};
+
+class AIComponent : public Component {
+public:
+    virtual void update(float deltaTime) override {
+        // Lógica de IA aqui...
+    }
+};
+
+class PhysicsComponent : public Component {
+public:
+    virtual void update(float deltaTime) override {
+        // Simulação física aqui...
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="game-loop.html">Game Loop</a> - Controla quando as atualizações acontecem</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para organizar diferentes aspectos de atualização</li>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Para gerenciar objetos que são frequentemente atualizados</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

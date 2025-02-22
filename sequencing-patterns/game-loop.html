@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Loop Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Sequenciamento > Game Loop
+        </div>
+
+        <div class="content">
+            <h2>Game Loop Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Desvincular o progresso do jogo do processamento de entrada do usuário e da taxa de renderização, mantendo um ciclo contínuo que impulsiona a progressão do jogo.</p>
+            </div>
+
+            <h3>Motivação</h3>
+            <p>Diferente de aplicações normais que são orientadas a eventos, jogos precisam continuar executando mesmo quando não há input do usuário. O Game Loop é o coração de qualquer jogo, responsável por gerenciar o tempo, processar inputs, atualizar o estado do jogo e renderizar.</p>
+
+            <h3>Padrão em Detalhes</h3>
+            <p>O Game Loop gerencia três aspectos principais:</p>
+            <ul>
+                <li>Processamento de input</li>
+                <li>Atualização do estado do jogo</li>
+                <li>Renderização</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Exemplo de Implementação</h3>
+                <div class="code-block">
+                    <pre><code>
+public class GameLoop {
+    private bool isRunning = false;
+    private float fixedTimeStep = 1.0f / 60.0f; // 60 FPS
+    private float maxTimeStep = 0.25f;
+    private float accumulator = 0.0f;
+
+    public void Start() {
+        isRunning = true;
+        float previousTime = Time.now();
+
+        while (isRunning) {
+            float currentTime = Time.now();
+            float deltaTime = currentTime - previousTime;
+            previousTime = currentTime;
+
+            // Limita o delta time para evitar espirais da morte
+            if (deltaTime > maxTimeStep)
+                deltaTime = maxTimeStep;
+
+            // Acumula o tempo que precisa ser processado
+            accumulator += deltaTime;
+
+            // Processa input
+            ProcessInput();
+
+            // Atualiza em passos fixos
+            while (accumulator >= fixedTimeStep) {
+                Update(fixedTimeStep);
+                accumulator -= fixedTimeStep;
+            }
+
+            // Renderiza com interpolação
+            float alpha = accumulator / fixedTimeStep;
+            Render(alpha);
+        }
+    }
+
+    private void ProcessInput() {
+        // Processa todos os inputs pendentes
+        foreach (var input in InputQueue.GetPendingInputs()) {
+            HandleInput(input);
+        }
+    }
+
+    private void Update(float deltaTime) {
+        // Atualiza a física
+        physics.Update(deltaTime);
+
+        // Atualiza a lógica do jogo
+        foreach (var entity in gameEntities) {
+            entity.Update(deltaTime);
+        }
+
+        // Atualiza IA
+        ai.Update(deltaTime);
+    }
+
+    private void Render(float interpolationAlpha) {
+        // Limpa a tela
+        graphics.Clear();
+
+        // Renderiza entidades com interpolação
+        foreach (var entity in gameEntities) {
+            Vector3 position = Vector3.Lerp(
+                entity.PreviousPosition,
+                entity.CurrentPosition,
+                interpolationAlpha
+            );
+            entity.Render(position);
+        }
+
+        // Apresenta o frame
+        graphics.SwapBuffers();
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Quando Usar</h3>
+            <ul>
+                <li>Em praticamente qualquer jogo que precise de atualizações contínuas</li>
+                <li>Quando você precisa de controle preciso sobre o timing do jogo</li>
+                <li>Quando você precisa separar a lógica de atualização da renderização</li>
+                <li>Quando você precisa de simulação em tempo fixo com renderização suave</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>O Game Loop precisa ser cuidadosamente projetado para:</p>
+                <ul>
+                    <li>Evitar espirais da morte quando o jogo está lento</li>
+                    <li>Manter consistência na simulação física</li>
+                    <li>Balancear uso de CPU e responsividade</li>
+                    <li>Lidar com diferentes taxas de atualização de hardware</li>
+                </ul>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="update-method.html">Update Method</a> - Usado dentro do game loop para atualizar entidades</li>
+                <li><a href="double-buffer.html">Double Buffer</a> - Frequentemente usado para renderização suave</li>
+                <li><a href="../behavioral-patterns/component.html">Component</a> - Para organizar a lógica de atualização</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

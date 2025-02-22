@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Desacoplamento > Component
+        </div>
+
+        <div class="content">
+            <h2>Component Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Permitir que um único objeto do jogo seja composto por múltiplos componentes independentes, cada um encapsulando um comportamento ou funcionalidade específica.</p>
+            </div>
+
+            <h3>O Problema: Herança Complexa</h3>
+            <p>Em jogos, objetos frequentemente precisam combinar diferentes comportamentos: um personagem pode ser renderizável, ter física, emitir som, ter IA, etc. Usar herança para isso leva a uma hierarquia de classes complexa e inflexível.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Component {
+public:
+    virtual ~Component() {}
+    virtual void update(float deltaTime) {}
+    virtual void render(Graphics& graphics) {}
+    virtual void onCollision(GameObject* other) {}
+
+    GameObject* gameObject() { return gameObject_; }
+
+protected:
+    GameObject* gameObject_;
+    friend class GameObject;
+};
+
+class GameObject {
+public:
+    void addComponent(Component* component) {
+        component->gameObject_ = this;
+        components_.push_back(component);
+    }
+
+    template<typename T>
+    T* getComponent() {
+        for (auto component : components_) {
+            T* result = dynamic_cast<T*>(component);
+            if (result) return result;
+        }
+        return nullptr;
+    }
+
+    void update(float deltaTime) {
+        for (auto component : components_) {
+            component->update(deltaTime);
+        }
+    }
+
+    void render(Graphics& graphics) {
+        for (auto component : components_) {
+            component->render(graphics);
+        }
+    }
+
+private:
+    vector<Component*> components_;
+    string name_;
+    Vector2 position_;
+    float rotation_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Personagem de Jogo</h3>
+            <div class="code-block">
+                <pre><code>
+class RenderComponent : public Component {
+public:
+    virtual void render(Graphics& graphics) override {
+        graphics.drawSprite(sprite_, gameObject()->position());
+    }
+
+private:
+    Sprite sprite_;
+};
+
+class PhysicsComponent : public Component {
+public:
+    virtual void update(float deltaTime) override {
+        velocity_ += GRAVITY * deltaTime;
+        gameObject()->position() += velocity_ * deltaTime;
+    }
+
+    virtual void onCollision(GameObject* other) override {
+        // Lógica de colisão...
+    }
+
+private:
+    Vector2 velocity_;
+};
+
+class AIComponent : public Component {
+public:
+    virtual void update(float deltaTime) override {
+        // Lógica de IA...
+        if (shouldJump()) {
+            auto physics = gameObject()->getComponent<PhysicsComponent>();
+            if (physics) physics->jump();
+        }
+    }
+
+private:
+    bool shouldJump() { /* ... */ }
+};
+
+// Uso
+GameObject* hero = new GameObject();
+hero->addComponent(new RenderComponent());
+hero->addComponent(new PhysicsComponent());
+hero->addComponent(new AIComponent());
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Sistema de Mensagens</h3>
+            <div class="code-block">
+                <pre><code>
+class Component {
+public:
+    virtual void receiveMessage(const string& message, void* data) {}
+};
+
+class GameObject {
+public:
+    void sendMessage(const string& message, void* data = nullptr) {
+        for (auto component : components_) {
+            component->receiveMessage(message, data);
+        }
+    }
+};
+
+class HealthComponent : public Component {
+public:
+    virtual void receiveMessage(const string& message, void* data) override {
+        if (message == "damage") {
+            int amount = *static_cast<int*>(data);
+            takeDamage(amount);
+        }
+    }
+
+private:
+    int health_ = 100;
+    void takeDamage(int amount) {
+        health_ -= amount;
+        if (health_ <= 0) {
+            gameObject()->sendMessage("death");
+        }
+    }
+};
+
+class AudioComponent : public Component {
+public:
+    virtual void receiveMessage(const string& message, void* data) override {
+        if (message == "death") {
+            playSound("death.wav");
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Facilita a composição de comportamentos</li>
+                <li>Evita hierarquias de herança complexas</li>
+                <li>Permite reutilização de código</li>
+                <li>Torna o código mais modular e flexível</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Ordem de atualização dos componentes</li>
+                    <li>Comunicação entre componentes</li>
+                    <li>Ciclo de vida dos componentes</li>
+                    <li>Performance com muitos componentes</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Componentes com Dependências: Componentes que requerem outros componentes</li>
+                <li>Componentes com Estado: Componentes que mantêm estado próprio</li>
+                <li>Componentes Reativos: Componentes que reagem a eventos</li>
+                <li>Componentes Compartilhados: Componentes reutilizados entre objetos</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/observer.html">Observer</a> - Para comunicação entre componentes</li>
+                <li><a href="../behavioral-patterns/type-object.html">Type Object</a> - Para definir tipos de componentes</li>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Para gerenciar componentes</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > State
+        </div>
+
+        <div class="content">
+            <h2>State Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Permitir que um objeto altere seu comportamento quando seu estado interno muda. O objeto parecerá ter mudado sua classe.</p>
+            </div>
+
+            <h3>O Problema: Comportamento do Personagem</h3>
+            <p>Em jogos, personagens frequentemente têm diferentes estados (parado, andando, pulando, atacando, etc.) que afetam como eles respondem a inputs e atualizações. Gerenciar esses estados com condicionais pode se tornar complexo e difícil de manter.</p>
+
+            <div class="implementation">
+                <h3>Implementação Problemática (sem o padrão)</h3>
+                <div class="code-block">
+                    <pre><code>
+class Hero {
+    enum State {
+        STANDING,
+        JUMPING,
+        DUCKING,
+        DIVING
+    };
+
+public:
+    void handleInput(Input input) {
+        switch (state_) {
+            case STANDING:
+                if (input.pressedJump()) {
+                    state_ = JUMPING;
+                    yVelocity_ = JUMP_VELOCITY;
+                } else if (input.pressedDuck()) {
+                    state_ = DUCKING;
+                }
+                break;
+
+            case JUMPING:
+                if (input.pressedDuck()) {
+                    state_ = DIVING;
+                }
+                break;
+
+            // Mais casos...
+        }
+    }
+
+    void update() {
+        switch (state_) {
+            case STANDING:
+                // Lógica de atualização parado...
+                break;
+
+            case JUMPING:
+                y_ += yVelocity_;
+                yVelocity_ += GRAVITY;
+                if (y_ <= 0) {
+                    y_ = 0;
+                    state_ = STANDING;
+                }
+                break;
+
+            // Mais casos...
+        }
+    }
+
+private:
+    State state_;
+    double x_, y_;
+    double yVelocity_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <div class="implementation">
+                <h3>Implementação com State Pattern</h3>
+                <div class="code-block">
+                    <pre><code>
+class HeroState {
+public:
+    virtual ~HeroState() {}
+    virtual void handleInput(Hero& hero, Input input) = 0;
+    virtual void update(Hero& hero) = 0;
+    virtual void enter(Hero& hero) = 0;
+    virtual void exit(Hero& hero) = 0;
+};
+
+class StandingState : public HeroState {
+public:
+    virtual void handleInput(Hero& hero, Input input) override {
+        if (input.pressedJump()) {
+            hero.changeState(new JumpingState());
+        } else if (input.pressedDuck()) {
+            hero.changeState(new DuckingState());
+        }
+    }
+
+    virtual void update(Hero& hero) override {
+        // Lógica de atualização parado...
+    }
+
+    virtual void enter(Hero& hero) override {
+        hero.setGraphics(STAND_SPRITE);
+    }
+
+    virtual void exit(Hero& hero) override {
+        // Limpeza ao sair do estado...
+    }
+};
+
+class Hero {
+public:
+    void handleInput(Input input) {
+        state_->handleInput(*this, input);
+    }
+
+    void update() {
+        state_->update(*this);
+    }
+
+    void changeState(HeroState* newState) {
+        state_->exit(*this);
+        delete state_;
+        state_ = newState;
+        state_->enter(*this);
+    }
+
+private:
+    HeroState* state_;
+    // Outros membros...
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Cada estado é uma classe independente e coesa</li>
+                <li>Transições de estado são explícitas e claras</li>
+                <li>Fácil adicionar novos estados sem modificar estados existentes</li>
+                <li>Estados podem ser reutilizados por diferentes entidades</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Gerenciamento de memória dos objetos de estado</li>
+                    <li>Compartilhamento de estados entre múltiplas entidades</li>
+                    <li>Ordem de atualização e transições de estado</li>
+                    <li>Estados aninhados ou hierárquicos</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Estados Concorrentes: Múltiplos estados ativos simultaneamente</li>
+                <li>Estados Hierárquicos: Estados que podem conter sub-estados</li>
+                <li>Estados Pushdown: Pilha de estados para comportamentos aninhados</li>
+                <li>Estados Compartilhados: Reutilização de estados entre objetos</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="command.html">Command</a> - Para encapsular transições de estado</li>
+                <li><a href="flyweight.html">Flyweight</a> - Para compartilhar estados entre objetos</li>
+                <li><a href="../behavioral-patterns/type-object.html">Type Object</a> - Para definir comportamentos de estado</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

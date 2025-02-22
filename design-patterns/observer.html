@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observer Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > Observer
+        </div>
+
+        <div class="content">
+            <h2>Observer Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Definir uma dependência um-para-muitos entre objetos para que quando um objeto mude de estado, todos seus dependentes sejam notificados e atualizados automaticamente.</p>
+            </div>
+
+            <h3>O Problema: Sistema de Conquistas</h3>
+            <p>Imagine que estamos adicionando um sistema de conquistas ao nosso jogo. Teremos dezenas de diferentes medalhas que os jogadores podem ganhar por completar marcos específicos como "Matar 100 Demônios Macacos", "Cair de uma Ponte" ou "Completar um Nível Usando Apenas um Furão Morto".</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+class Observer {
+public:
+    virtual ~Observer() {}
+    virtual void onNotify(const Entity& entity, Event event) = 0;
+};
+
+class Subject {
+private:
+    Observer* observers_[MAX_OBSERVERS];
+    int numObservers_;
+
+public:
+    void addObserver(Observer* observer) {
+        // Adiciona ao array...
+    }
+
+    void removeObserver(Observer* observer) {
+        // Remove do array...
+    }
+
+protected:
+    void notify(const Entity& entity, Event event) {
+        for (int i = 0; i < numObservers_; i++) {
+            observers_[i]->onNotify(entity, event);
+        }
+    }
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Física</h3>
+            <p>Um exemplo prático seria o sistema de física notificando quando um personagem cai:</p>
+            <div class="code-block">
+                <pre><code>
+class Physics : public Subject {
+public:
+    void updateEntity(Entity& entity) {
+        bool wasOnSurface = entity.isOnSurface();
+        entity.accelerate(GRAVITY);
+        entity.update();
+
+        if (wasOnSurface && !entity.isOnSurface()) {
+            notify(entity, EVENT_START_FALL);
+        }
+    }
+};
+
+class Achievements : public Observer {
+public:
+    virtual void onNotify(const Entity& entity, Event event) {
+        switch (event) {
+            case EVENT_ENTITY_FELL:
+                if (entity.isHero() && heroIsOnBridge_) {
+                    unlock(ACHIEVEMENT_FELL_OFF_BRIDGE);
+                }
+                break;
+        }
+    }
+private:
+    void unlock(Achievement achievement) {
+        // Desbloqueia se ainda não desbloqueado...
+    }
+    bool heroIsOnBridge_;
+};
+                </code></pre>
+            </div>
+
+            <h3>Considerações de Performance</h3>
+            <ul>
+                <li>O padrão é síncrono - os observadores são notificados imediatamente</li>
+                <li>Não requer alocação dinâmica de memória para notificações</li>
+                <li>Pode ser implementado com lista ligada para evitar alocação dinâmica</li>
+                <li>Cuidado com deadlocks em sistemas multi-thread</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Alguns pontos importantes a considerar:</p>
+                <ul>
+                    <li>Gerenciamento de memória ao destruir subjects e observers</li>
+                    <li>Ordem de notificação dos observadores</li>
+                    <li>Performance em sistemas críticos</li>
+                    <li>Acoplamento indireto entre observadores</li>
+                </ul>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../behavioral-patterns/event-queue.html">Event Queue</a> - Para comunicação assíncrona</li>
+                <li><a href="command.html">Command</a> - Frequentemente usado com Observer para encapsular ações</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para organizar sistemas que precisam observar eventos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

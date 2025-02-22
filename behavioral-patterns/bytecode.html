@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bytecode Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões Comportamentais > Bytecode
+        </div>
+
+        <div class="content">
+            <h2>Bytecode Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Encapsular comportamentos em instruções que podem ser interpretadas por uma máquina virtual, permitindo que comportamentos complexos sejam definidos em tempo de execução.</p>
+            </div>
+
+            <h3>O Problema: Comportamentos Dinâmicos</h3>
+            <p>Em jogos, frequentemente precisamos definir comportamentos complexos que podem mudar durante o jogo, como scripts de IA, magias personalizadas, ou sequências de animação. Codificar todos esses comportamentos diretamente no código fonte torna o jogo inflexível e difícil de modificar.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+enum Instruction {
+    INST_SET_HEALTH,
+    INST_SET_WISDOM,
+    INST_SET_AGILITY,
+    INST_PLAY_SOUND,
+    INST_SPAWN_PARTICLES,
+    INST_WAIT,
+    // ... outras instruções
+};
+
+class VM {
+public:
+    void interpret(uint8_t* bytecode, int size) {
+        for (int i = 0; i < size; i++) {
+            switch (bytecode[i]) {
+                case INST_SET_HEALTH: {
+                    int amount = bytecode[++i];
+                    setHealth(amount);
+                    break;
+                }
+                case INST_PLAY_SOUND: {
+                    int soundId = bytecode[++i];
+                    playSound(soundId);
+                    break;
+                }
+                case INST_WAIT: {
+                    int duration = bytecode[++i];
+                    wait(duration);
+                    break;
+                }
+                // ... outros casos
+            }
+        }
+    }
+
+private:
+    void setHealth(int amount) { /* ... */ }
+    void playSound(int soundId) { /* ... */ }
+    void wait(int duration) { /* ... */ }
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Magias</h3>
+            <div class="code-block">
+                <pre><code>
+class Spell {
+public:
+    Spell(const char* bytecode, int size) 
+        : bytecode_(new uint8_t[size])
+        , size_(size) {
+        memcpy(bytecode_, bytecode, size);
+    }
+
+    void cast(VM& vm) {
+        vm.interpret(bytecode_, size_);
+    }
+
+private:
+    uint8_t* bytecode_;
+    int size_;
+};
+
+// Exemplo de definição de magia
+uint8_t fireball[] = {
+    INST_PLAY_SOUND, 1,      // Som de fogo
+    INST_SPAWN_PARTICLES, 2,  // Partículas de fogo
+    INST_SET_HEALTH, -50,    // Dano
+    INST_WAIT, 30            // Espera
+};
+
+Spell fireballSpell(fireball, sizeof(fireball));
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Comportamentos podem ser modificados sem recompilar o jogo</li>
+                <li>Facilita a criação de ferramentas de edição</li>
+                <li>Permite serialização e carregamento de comportamentos</li>
+                <li>Melhora a segurança isolando scripts em uma VM</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Overhead de interpretação</li>
+                    <li>Complexidade de implementação da VM</li>
+                    <li>Debugging mais complexo</li>
+                    <li>Necessidade de ferramentas de suporte</li>
+                </ul>
+            </div>
+
+            <h3>Exemplo Avançado: VM com Stack</h3>
+            <div class="code-block">
+                <pre><code>
+class StackVM {
+public:
+    void execute(uint8_t* code, int size) {
+        while (ip_ < size) {
+            uint8_t instruction = code[ip_++];
+            switch (instruction) {
+                case INST_LITERAL: {
+                    int value = code[ip_++];
+                    push(value);
+                    break;
+                }
+                case INST_ADD: {
+                    int b = pop();
+                    int a = pop();
+                    push(a + b);
+                    break;
+                }
+                case INST_CALL: {
+                    int function = code[ip_++];
+                    int numArgs = code[ip_++];
+                    callFunction(function, numArgs);
+                    break;
+                }
+                // ... outros casos
+            }
+        }
+    }
+
+private:
+    void push(int value) { stack_[stackTop_++] = value; }
+    int pop() { return stack_[--stackTop_]; }
+    
+    int stack_[100];
+    int stackTop_ = 0;
+    int ip_ = 0;
+};
+                </code></pre>
+            </div>
+
+            <h3>Aplicações</h3>
+            <ul>
+                <li>Sistemas de IA</li>
+                <li>Magias e habilidades</li>
+                <li>Cutscenes e animações</li>
+                <li>Comportamentos de NPCs</li>
+                <li>Modificações de jogadores</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/command.html">Command</a> - Uma alternativa mais simples para comportamentos</li>
+                <li><a href="../design-patterns/state.html">State</a> - Para gerenciar o estado da VM</li>
+                <li><a href="subclass-sandbox.html">Subclass Sandbox</a> - Para definir operações primitivas</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

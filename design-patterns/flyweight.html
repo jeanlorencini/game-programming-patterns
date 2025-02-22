@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyweight Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > Flyweight
+        </div>
+
+        <div class="content">
+            <h2>Flyweight Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Usar compartilhamento para suportar grandes quantidades de objetos de granularidade fina de maneira eficiente, reduzindo o consumo de memória.</p>
+            </div>
+
+            <h3>Motivação</h3>
+            <p>Em jogos, frequentemente precisamos gerenciar grandes quantidades de objetos similares, como árvores em uma floresta, partículas em um sistema de partículas, ou tiles em um mapa de terreno. O padrão Flyweight permite compartilhar dados comuns entre múltiplas instâncias, reduzindo significativamente o uso de memória.</p>
+
+            <h3>Padrão em Detalhes</h3>
+            <p>O padrão Flyweight divide os dados de um objeto em:</p>
+            <ul>
+                <li>Estado intrínseco: dados compartilhados entre instâncias</li>
+                <li>Estado extrínseco: dados únicos para cada instância</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Exemplo de Implementação</h3>
+                <div class="code-block">
+                    <pre><code>
+// Dados compartilhados (estado intrínseco)
+public class TerrainType {
+    private Texture texture;
+    private float movementCost;
+    private bool isWater;
+
+    public TerrainType(Texture texture, float cost, bool water) {
+        this.texture = texture;
+        this.movementCost = cost;
+        this.isWater = water;
+    }
+
+    public void Render(Vector2 position) {
+        // Renderiza a textura na posição
+    }
+}
+
+// Fábrica de Flyweights
+public class TerrainFactory {
+    private Dictionary<string, TerrainType> terrainTypes;
+
+    public TerrainFactory() {
+        terrainTypes = new Dictionary<string, TerrainType>();
+        
+        // Pré-carrega tipos comuns de terreno
+        terrainTypes["grass"] = new TerrainType(grassTexture, 1.0f, false);
+        terrainTypes["water"] = new TerrainType(waterTexture, 2.0f, true);
+        terrainTypes["mountain"] = new TerrainType(mountainTexture, 3.0f, false);
+    }
+
+    public TerrainType GetTerrainType(string type) {
+        return terrainTypes[type];
+    }
+}
+
+// Uso do terreno (estado extrínseco)
+public class World {
+    private TerrainType[,] map;
+    private TerrainFactory factory;
+
+    public void GenerateMap() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // Cada tile usa uma referência compartilhada
+                map[x,y] = factory.GetTerrainType(GetTerrainAt(x,y));
+            }
+        }
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Quando Usar</h3>
+            <ul>
+                <li>Quando você precisa criar um grande número de objetos similares</li>
+                <li>Quando a memória é uma preocupação crítica</li>
+                <li>Quando muitos objetos compartilham dados em comum</li>
+                <li>Quando a identidade do objeto não é importante</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>O padrão Flyweight pode tornar o código mais complexo devido à separação entre estado intrínseco e extrínseco. Além disso, o compartilhamento de dados pode tornar mais difícil modificar características individuais dos objetos.</p>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../optimization-patterns/object-pool.html">Object Pool</a> - Outra técnica para gerenciar grandes quantidades de objetos</li>
+                <li><a href="prototype.html">Prototype</a> - Pode ser usado em conjunto para criar instâncias base</li>
+                <li><a href="../optimization-patterns/data-locality.html">Data Locality</a> - Complementa o Flyweight na otimização de memória</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLID Principles - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Princípios > SOLID Principles
+        </div>
+
+        <div class="content">
+            <h2>SOLID Principles</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Os princípios SOLID são cinco princípios de design orientado a objetos que visam criar sistemas mais compreensíveis, flexíveis e manuteníveis.</p>
+            </div>
+
+            <h3>S - Single Responsibility Principle (SRP)</h3>
+            <p>Uma classe deve ter apenas uma razão para mudar, ou seja, deve ter apenas uma responsabilidade.</p>
+            <div class="code-block">
+                <pre><code>
+// Violação do SRP
+public class PlayerManager {
+    public void UpdatePlayer() { /* ... */ }
+    public void SavePlayerData() { /* ... */ }
+    public void RenderPlayerUI() { /* ... */ }
+}
+
+// Seguindo SRP
+public class Player {
+    public void Update() { /* ... */ }
+}
+
+public class PlayerDataManager {
+    public void SavePlayerData(Player player) { /* ... */ }
+}
+
+public class PlayerUI {
+    public void Render(Player player) { /* ... */ }
+}
+                </code></pre>
+            </div>
+
+            <h3>O - Open/Closed Principle (OCP)</h3>
+            <p>Entidades de software devem estar abertas para extensão, mas fechadas para modificação.</p>
+            <div class="code-block">
+                <pre><code>
+// Violação do OCP
+public class WeaponSystem {
+    public void Attack(string weaponType) {
+        if (weaponType == "Sword")
+            // Lógica da espada
+        else if (weaponType == "Bow")
+            // Lógica do arco
+        // Precisa modificar a classe para cada nova arma
+    }
+}
+
+// Seguindo OCP
+public interface IWeapon {
+    void Attack();
+}
+
+public class Sword : IWeapon {
+    public void Attack() { /* Lógica da espada */ }
+}
+
+public class Bow : IWeapon {
+    public void Attack() { /* Lógica do arco */ }
+}
+
+// Novas armas podem ser adicionadas sem modificar o código existente
+                </code></pre>
+            </div>
+
+            <h3>L - Liskov Substitution Principle (LSP)</h3>
+            <p>Objetos de uma classe derivada devem poder substituir objetos da classe base sem afetar a corretude do programa.</p>
+            <div class="code-block">
+                <pre><code>
+// Violação do LSP
+public class Bird {
+    public virtual void Fly() { /* ... */ }
+}
+
+public class Penguin : Bird {
+    public override void Fly() {
+        throw new NotImplementedException(); // Pinguins não voam!
+    }
+}
+
+// Seguindo LSP
+public interface IFlyable {
+    void Fly();
+}
+
+public class Bird {
+    public virtual void Move() { /* ... */ }
+}
+
+public class FlyingBird : Bird, IFlyable {
+    public void Fly() { /* ... */ }
+}
+
+public class Penguin : Bird {
+    // Não implementa IFlyable
+}
+                </code></pre>
+            </div>
+
+            <h3>I - Interface Segregation Principle (ISP)</h3>
+            <p>Clientes não devem ser forçados a depender de interfaces que não usam.</p>
+            <div class="code-block">
+                <pre><code>
+// Violação do ISP
+public interface IGameEntity {
+    void Update();
+    void Render();
+    void HandleInput();
+    void PlaySound();
+    void SaveState();
+}
+
+// Seguindo ISP
+public interface IUpdatable {
+    void Update();
+}
+
+public interface IRenderable {
+    void Render();
+}
+
+public interface IInputHandler {
+    void HandleInput();
+}
+
+public class Player : IUpdatable, IRenderable, IInputHandler {
+    public void Update() { /* ... */ }
+    public void Render() { /* ... */ }
+    public void HandleInput() { /* ... */ }
+}
+
+public class Background : IRenderable {
+    public void Render() { /* ... */ }
+}
+                </code></pre>
+            </div>
+
+            <h3>D - Dependency Inversion Principle (DIP)</h3>
+            <p>Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender de abstrações.</p>
+            <div class="code-block">
+                <pre><code>
+// Violação do DIP
+public class GameAudio {
+    private UnityAudioSystem audioSystem;
+
+    public GameAudio() {
+        audioSystem = new UnityAudioSystem();
+    }
+
+    public void PlaySound(string soundName) {
+        audioSystem.Play(soundName);
+    }
+}
+
+// Seguindo DIP
+public interface IAudioSystem {
+    void Play(string soundName);
+}
+
+public class UnityAudioSystem : IAudioSystem {
+    public void Play(string soundName) { /* ... */ }
+}
+
+public class GameAudio {
+    private IAudioSystem audioSystem;
+
+    public GameAudio(IAudioSystem audioSystem) {
+        this.audioSystem = audioSystem;
+    }
+
+    public void PlaySound(string soundName) {
+        audioSystem.Play(soundName);
+    }
+}
+                </code></pre>
+            </div>
+
+            <h3>Benefícios em Jogos</h3>
+            <ul>
+                <li>Código mais organizado e manutenível</li>
+                <li>Facilita testes unitários</li>
+                <li>Reduz acoplamento entre sistemas</li>
+                <li>Facilita extensões e modificações</li>
+                <li>Melhora reusabilidade do código</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Não force os princípios quando uma solução mais simples for suficiente</li>
+                    <li>Balance os princípios com as necessidades de performance</li>
+                    <li>Evite criar abstrações desnecessárias</li>
+                    <li>Considere o contexto do jogo ao aplicar os princípios</li>
+                </ul>
+            </div>
+
+            <h3>Aplicação em Jogos</h3>
+            <ul>
+                <li>Sistemas de Input: Use interfaces para diferentes tipos de controle</li>
+                <li>Sistemas de Renderização: Separe lógica de renderização da lógica do jogo</li>
+                <li>IA: Crie comportamentos modulares e extensíveis</li>
+                <li>Sistemas de Save: Desacople a lógica de salvamento da lógica do jogo</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../design-patterns/strategy.html">Strategy</a> - Para implementar o Open/Closed Principle</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para Single Responsibility</li>
+                <li><a href="../design-patterns/factory-method.html">Factory Method</a> - Para Dependency Inversion</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > Command
+        </div>
+
+        <div class="content">
+            <h2>Command Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Encapsular uma solicitação como um objeto, permitindo parametrizar clientes com diferentes solicitações, enfileirar ou registrar solicitações e suportar operações que podem ser desfeitas.</p>
+            </div>
+
+            <h3>Motivação</h3>
+            <p>Em jogos, frequentemente precisamos lidar com inputs do usuário, ações que podem ser desfeitas (undo/redo), ou sequências de comandos que precisam ser executadas em momentos específicos. O padrão Command nos ajuda a encapsular toda a informação necessária para executar uma ação ou disparar um evento posterior.</p>
+
+            <h3>Padrão em Detalhes</h3>
+            <p>O padrão Command transforma um pedido em um objeto independente que contém toda a informação sobre o pedido. Essa transformação permite que você:</p>
+            <ul>
+                <li>Parametrize métodos com diferentes pedidos</li>
+                <li>Enfileire pedidos para processamento posterior</li>
+                <li>Suporte operações que podem ser desfeitas</li>
+                <li>Salve o histórico de comandos</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Exemplo de Implementação</h3>
+                <div class="code-block">
+                    <pre><code>
+// Interface base para todos os comandos
+public interface ICommand {
+    void Execute();
+    void Undo();
+}
+
+// Comando concreto para pular
+public class JumpCommand : ICommand {
+    private Player player;
+    private float jumpForce;
+
+    public JumpCommand(Player player, float force) {
+        this.player = player;
+        this.jumpForce = force;
+    }
+
+    public void Execute() {
+        player.Jump(jumpForce);
+    }
+
+    public void Undo() {
+        player.CancelJump();
+    }
+}
+
+// Gerenciador de input que usa comandos
+public class InputHandler {
+    private ICommand buttonX;
+    private Stack<ICommand> commandHistory;
+
+    public InputHandler() {
+        commandHistory = new Stack<ICommand>();
+    }
+
+    public void SetCommand(ICommand command) {
+        buttonX = command;
+    }
+
+    public void HandleInput() {
+        if (Input.GetKeyDown(KeyCode.X)) {
+            buttonX.Execute();
+            commandHistory.Push(buttonX);
+        }
+    }
+
+    public void UndoLastCommand() {
+        if (commandHistory.Count > 0) {
+            var command = commandHistory.Pop();
+            command.Undo();
+        }
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Quando Usar</h3>
+            <ul>
+                <li>Quando você precisa parametrizar objetos com operações</li>
+                <li>Quando você precisa enfileirar operações, agendar sua execução ou executá-las remotamente</li>
+                <li>Quando você precisa implementar operações reversíveis (undo/redo)</li>
+                <li>Quando você quer implementar um sistema de replay de ações do jogador</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>O padrão Command pode aumentar a complexidade do código devido à criação de muitas classes pequenas para cada comando possível. Além disso, se os comandos armazenarem estado do jogo para operações de undo, podem consumir muita memória em históricos longos.</p>
+            </div>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="state.html">State Pattern</a> - Frequentemente usado em conjunto com Command para gerenciar estados do jogo</li>
+                <li><a href="../behavioral-patterns/bytecode.html">Bytecode Pattern</a> - Uma variação mais complexa que pode ser usada para scripts</li>
+                <li><a href="../decoupling-patterns/event-queue.html">Event Queue</a> - Pode usar Commands para representar eventos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

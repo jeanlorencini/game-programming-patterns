@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singleton Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Design Patterns > Singleton
+        </div>
+
+        <div class="content">
+            <h2>Singleton Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Garantir que uma classe tenha apenas uma instância e fornecer um ponto global de acesso para ela.</p>
+            </div>
+
+            <h3>O Problema: Gerenciadores Globais</h3>
+            <p>Em jogos, frequentemente precisamos de sistemas que gerenciam recursos ou estados globais do jogo, como gerenciadores de áudio, de recursos, de física ou de entrada. Tradicionalmente, o Singleton tem sido usado para garantir uma única instância desses sistemas.</p>
+
+            <div class="implementation">
+                <h3>Implementação Tradicional</h3>
+                <div class="code-block">
+                    <pre><code>
+class FileSystem {
+public:
+    static FileSystem& instance() {
+        static FileSystem instance;
+        return instance;
+    }
+
+    void writeFile(const char* path, const char* contents) {
+        // Implementação...
+    }
+
+    // Impede cópias
+    FileSystem(const FileSystem&) = delete;
+    FileSystem& operator=(const FileSystem&) = delete;
+
+private:
+    FileSystem() {} // Construtor privado
+};
+
+// Uso
+FileSystem::instance().writeFile("game.save", saveData);
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Problemas com Singleton</h3>
+            <p>Apesar de sua popularidade, o padrão Singleton tem várias desvantagens:</p>
+            <ul>
+                <li>Acoplamento global implícito</li>
+                <li>Dificuldade em testes unitários</li>
+                <li>Estado mutável compartilhado</li>
+                <li>Inicialização e ordem de destruição complexas</li>
+            </ul>
+
+            <div class="implementation">
+                <h3>Alternativa: Injeção de Dependência</h3>
+                <div class="code-block">
+                    <pre><code>
+class FileSystem {
+public:
+    virtual ~FileSystem() = default;
+    virtual void writeFile(const char* path, const char* contents) = 0;
+};
+
+class RealFileSystem : public FileSystem {
+public:
+    virtual void writeFile(const char* path, const char* contents) override {
+        // Implementação real...
+    }
+};
+
+class Game {
+public:
+    Game(FileSystem& fileSystem) : fileSystem_(fileSystem) {}
+
+    void save() {
+        fileSystem_.writeFile("game.save", saveData);
+    }
+
+private:
+    FileSystem& fileSystem_;
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Quando Usar (com cautela)</h3>
+            <ul>
+                <li>Quando realmente precisa garantir uma única instância</li>
+                <li>Para recursos que devem ser compartilhados globalmente</li>
+                <li>Em sistemas legados que já dependem de singletons</li>
+                <li>Em protótipos rápidos onde a arquitetura não é crítica</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Evite usar Singleton como solução padrão para acesso global</li>
+                    <li>Considere alternativas como injeção de dependência</li>
+                    <li>Tenha cuidado com problemas de inicialização em múltiplas threads</li>
+                    <li>Pense na testabilidade do código que usa singletons</li>
+                </ul>
+            </div>
+
+            <h3>Alternativas ao Singleton</h3>
+            <ul>
+                <li>Injeção de Dependência</li>
+                <li>Service Locator</li>
+                <li>Sistemas de Componentes</li>
+                <li>Configuração explícita no início do jogo</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="../decoupling-patterns/service-locator.html">Service Locator</a> - Uma alternativa mais flexível para acesso global</li>
+                <li><a href="../decoupling-patterns/component.html">Component</a> - Para organizar funcionalidades sem acoplamento global</li>
+                <li><a href="factory-method.html">Factory Method</a> - Para criar instâncias de forma mais controlada</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

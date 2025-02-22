@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Pool Pattern - Game Programming Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .breadcrumb a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .implementation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Programming Patterns</h1>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Início</a> > Padrões de Otimização > Object Pool
+        </div>
+
+        <div class="content">
+            <h2>Object Pool Pattern</h2>
+            
+            <div class="note">
+                <h3>Intenção</h3>
+                <p>Melhorar a performance e reduzir a fragmentação de memória reutilizando objetos de um conjunto pré-alocado em vez de criar e destruir objetos continuamente.</p>
+            </div>
+
+            <h3>O Problema: Alocação Dinâmica</h3>
+            <p>Em jogos, frequentemente precisamos criar e destruir muitos objetos rapidamente (projéteis, partículas, inimigos). A alocação dinâmica de memória é lenta e pode causar fragmentação, levando a problemas de performance.</p>
+
+            <div class="implementation">
+                <h3>Implementação Básica</h3>
+                <div class="code-block">
+                    <pre><code>
+template<typename T>
+class ObjectPool {
+private:
+    static const int POOL_SIZE = 1000;
+    
+    // Array de objetos
+    T objects_[POOL_SIZE];
+    
+    // Array de flags de uso
+    bool active_[POOL_SIZE];
+    
+    // Índice para busca rápida
+    int firstAvailable_;
+
+public:
+    ObjectPool() : firstAvailable_(0) {
+        // Inicialmente, nenhum objeto está em uso
+        for (int i = 0; i < POOL_SIZE; i++) {
+            active_[i] = false;
+        }
+    }
+
+    T* create() {
+        if (firstAvailable_ >= POOL_SIZE) {
+            return nullptr; // Pool está cheia
+        }
+
+        // Encontra o próximo slot disponível
+        while (active_[firstAvailable_]) {
+            firstAvailable_++;
+            if (firstAvailable_ >= POOL_SIZE) {
+                return nullptr;
+            }
+        }
+
+        active_[firstAvailable_] = true;
+        return &objects_[firstAvailable_];
+    }
+
+    void destroy(T* object) {
+        // Calcula o índice do objeto no pool
+        int index = object - &objects_[0];
+        
+        // Valida o índice
+        if (index >= 0 && index < POOL_SIZE) {
+            active_[index] = false;
+            if (index < firstAvailable_) {
+                firstAvailable_ = index;
+            }
+        }
+    }
+};
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3>Exemplo: Sistema de Partículas</h3>
+            <div class="code-block">
+                <pre><code>
+class Particle {
+public:
+    Vector3 position;
+    Vector3 velocity;
+    float lifetime;
+    float size;
+    Color color;
+
+    void init(const Vector3& pos, const Vector3& vel,
+              float life, float sz, const Color& col) {
+        position = pos;
+        velocity = vel;
+        lifetime = life;
+        size = sz;
+        color = col;
+    }
+
+    bool update(float dt) {
+        lifetime -= dt;
+        if (lifetime <= 0) return false;
+
+        position += velocity * dt;
+        velocity += GRAVITY * dt;
+        return true;
+    }
+};
+
+class ParticleSystem {
+private:
+    ObjectPool<Particle> pool_;
+    vector<Particle*> activeParticles_;
+
+public:
+    void createParticle(const Vector3& position) {
+        Particle* particle = pool_.create();
+        if (particle) {
+            particle->init(
+                position,
+                randomVelocity(),
+                randomFloat(1.0f, 2.0f), // lifetime
+                randomFloat(0.1f, 0.5f), // size
+                randomColor()
+            );
+            activeParticles_.push_back(particle);
+        }
+    }
+
+    void update(float dt) {
+        for (auto it = activeParticles_.begin();
+             it != activeParticles_.end();) {
+            Particle* particle = *it;
+            
+            if (particle->update(dt)) {
+                ++it;
+            } else {
+                pool_.destroy(particle);
+                it = activeParticles_.erase(it);
+            }
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Exemplo Avançado: Pool com Memória Contígua</h3>
+            <div class="code-block">
+                <pre><code>
+template<typename T>
+class ContiguousPool {
+private:
+    struct Chunk {
+        T object;
+        bool active;
+        int nextFree;
+    };
+
+    static const int CHUNK_SIZE = 16384; // 16KB
+    static const int MAX_CHUNKS = 8;
+
+    // Memória contígua para chunks
+    Chunk* chunks_[MAX_CHUNKS];
+    int numChunks_;
+    int freeList_;
+    int numActive_;
+
+public:
+    ContiguousPool() : numChunks_(0), freeList_(-1), numActive_(0) {
+        addChunk();
+    }
+
+    ~ContiguousPool() {
+        for (int i = 0; i < numChunks_; i++) {
+            delete[] chunks_[i];
+        }
+    }
+
+    T* create() {
+        if (freeList_ == -1) {
+            if (!addChunk()) {
+                return nullptr;
+            }
+        }
+
+        // Pega o próximo objeto livre
+        Chunk& chunk = chunks_[freeList_ / CHUNK_SIZE][freeList_ % CHUNK_SIZE];
+        int nextFree = chunk.nextFree;
+        chunk.active = true;
+        freeList_ = nextFree;
+        numActive_++;
+
+        return &chunk.object;
+    }
+
+    void destroy(T* object) {
+        // Encontra o chunk e índice
+        for (int i = 0; i < numChunks_; i++) {
+            ptrdiff_t offset = ((char*)object - (char*)chunks_[i]) / 
+                              sizeof(Chunk);
+            
+            if (offset >= 0 && offset < CHUNK_SIZE) {
+                Chunk& chunk = chunks_[i][offset];
+                chunk.active = false;
+                chunk.nextFree = freeList_;
+                freeList_ = i * CHUNK_SIZE + offset;
+                numActive_--;
+                return;
+            }
+        }
+    }
+
+private:
+    bool addChunk() {
+        if (numChunks_ >= MAX_CHUNKS) {
+            return false;
+        }
+
+        chunks_[numChunks_] = new Chunk[CHUNK_SIZE];
+        
+        // Inicializa a lista encadeada de objetos livres
+        for (int i = 0; i < CHUNK_SIZE - 1; i++) {
+            chunks_[numChunks_][i].nextFree = 
+                numChunks_ * CHUNK_SIZE + i + 1;
+        }
+        
+        chunks_[numChunks_][CHUNK_SIZE - 1].nextFree = freeList_;
+        freeList_ = numChunks_ * CHUNK_SIZE;
+        
+        numChunks_++;
+        return true;
+    }
+};
+
+// Uso com sistema de projéteis
+class ProjectileSystem {
+private:
+    ContiguousPool<Projectile> pool_;
+    
+    struct ActiveProjectile {
+        Projectile* projectile;
+        float damage;
+        bool isPiercing;
+    };
+    
+    vector<ActiveProjectile> activeProjectiles_;
+
+public:
+    void fireProjectile(const Vector3& position,
+                       const Vector3& direction,
+                       float damage,
+                       bool isPiercing) {
+        Projectile* proj = pool_.create();
+        if (proj) {
+            proj->position = position;
+            proj->velocity = direction * PROJECTILE_SPEED;
+            
+            ActiveProjectile active;
+            active.projectile = proj;
+            active.damage = damage;
+            active.isPiercing = isPiercing;
+            
+            activeProjectiles_.push_back(active);
+        }
+    }
+
+    void update(float dt) {
+        for (auto it = activeProjectiles_.begin();
+             it != activeProjectiles_.end();) {
+            auto& active = *it;
+            
+            if (updateProjectile(active, dt)) {
+                ++it;
+            } else {
+                pool_.destroy(active.projectile);
+                it = activeProjectiles_.erase(it);
+            }
+        }
+    }
+};
+                </code></pre>
+            </div>
+
+            <h3>Benefícios</h3>
+            <ul>
+                <li>Reduz a fragmentação de memória</li>
+                <li>Melhora a performance evitando alocações</li>
+                <li>Melhor localidade de cache</li>
+                <li>Previsibilidade no uso de memória</li>
+            </ul>
+
+            <div class="warning">
+                <h3>Cuidados</h3>
+                <p>Pontos importantes a considerar:</p>
+                <ul>
+                    <li>Tamanho fixo do pool pode limitar o jogo</li>
+                    <li>Objetos precisam ser reutilizáveis</li>
+                    <li>Gerenciamento de referências para objetos do pool</li>
+                    <li>Overhead de memória se o pool for muito grande</li>
+                </ul>
+            </div>
+
+            <h3>Variações</h3>
+            <ul>
+                <li>Pool Expansível: Cresce conforme necessário</li>
+                <li>Pool Hierárquico: Múltiplos pools para diferentes tamanhos</li>
+                <li>Pool com Compactação: Mantém objetos ativos contíguos</li>
+                <li>Pool Thread-Safe: Para uso em múltiplas threads</li>
+            </ul>
+
+            <h3>Padrões Relacionados</h3>
+            <ul>
+                <li><a href="data-locality.html">Data Locality</a> - Para organizar dados do pool eficientemente</li>
+                <li><a href="../design-patterns/flyweight.html">Flyweight</a> - Para compartilhar dados entre objetos do pool</li>
+                <li><a href="spatial-partition.html">Spatial Partition</a> - Para gerenciar objetos do pool espacialmente</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 
