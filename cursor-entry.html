@@ -1,188 +1,245 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-    <title>Game Programming Patterns Sitemap</title>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <style type="text/css">
-    body {
-        background-color: #DDD;
-        font: normal 80%  "Trebuchet MS", "Helvetica", sans-serif;
-        margin:0;
-        text-align:center;
-    }
-    #cont{
-        margin:auto;
-        width:800px;
-        text-align:left;
-    }
-    a:link,a:visited {
-        color: #0180AF;
-        text-decoration: underline;
-    }
-    a:hover {
-        color: #666;
-    }
-    h1 {
-        background-color:#fff;
-        padding:20px;
-        color:#00AEEF;
-        text-align:left;
-        font-size:32px;
-        margin:0px;
-    }
-    table {
-        background-color: #F3F3F3;
-        border-collapse:collapse;
-        width:100%;
-        margin:0px;
-        margin-top:20px;
-    }
-    th {
-        text-align:left;
-        font-size:15px;
-        padding:5px 0px;
-        border-bottom: 2px solid #666;
-    }
-    td {
-        font-size:14px;
-        padding:5px 0px;
-        border-bottom: 1px solid #666;
-    }
-    tr:nth-child(odd) {
-        background-color:#fff;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ponto de entrada para indexação do Cursor.ai - Documentação completa sobre Game Programming Patterns">
+    <meta name="robots" content="index, follow">
+    <meta name="cursor-ai" content="documentation-entry-point">
+    <title>Game Programming Patterns - Documentação para Cursor.ai</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .pattern-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .pattern-card {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .pattern-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .pattern-card p {
+            margin-bottom: 10px;
+        }
+        .pattern-card a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .pattern-card a:hover {
+            text-decoration: underline;
+        }
+        .metadata {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .metadata h2 {
+            font-size: 1.2em;
+        }
+        .metadata ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .metadata li {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
-<div id="cont">
-    <h1>Game Programming Patterns HTML Sitemap</h1>
-    <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <th>URL</th>
-            <th>Priority</th>
-            <th>Last Modified</th>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/index.html">Home</a></td>
-            <td>1.00</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/introducao/arquitetura-performance-games.html">Arquitetura, Performance e Games</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/introducao/sobre-o-livro.html">Sobre o Livro</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/principles/kiss-principle.html">KISS Principle</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/principles/solid-principles.html">SOLID Principles</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/command.html">Command Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/flyweight.html">Flyweight Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/observer.html">Observer Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/prototype.html">Prototype Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/singleton.html">Singleton Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/state.html">State Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/double-buffer.html">Double Buffer Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/game-loop.html">Game Loop Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/update-method.html">Update Method Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/bytecode.html">Bytecode Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/subclass-sandbox.html">Subclass Sandbox Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/type-object.html">Type Object Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/component.html">Component Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/event-queue.html">Event Queue Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/service-locator.html">Service Locator Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/data-locality.html">Data Locality Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/dirty-flag.html">Dirty Flag Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/object-pool.html">Object Pool Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-        <tr>
-            <td><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/spatial-partition.html">Spatial Partition Pattern</a></td>
-            <td>0.8</td>
-            <td>2025-02-22</td>
-        </tr>
-    </table>
-</div>
+    <div class="container">
+        <h1>Game Programming Patterns - Documentação para Cursor.ai</h1>
+        
+        <p>Esta página serve como ponto de entrada estruturado para indexação pelo Cursor.ai, fornecendo uma visão geral organizada de todos os padrões de programação de jogos documentados neste site.</p>
+        
+        <div class="section">
+            <h2>Introdução</h2>
+            <p>Esta documentação aborda padrões de programação específicos para desenvolvimento de jogos, baseados no livro "Game Programming Patterns" de Robert Nystrom. Os padrões são organizados em categorias que refletem diferentes aspectos do desenvolvimento de jogos.</p>
+            <ul>
+                <li><a href="introducao/arquitetura-performance-games.html">Arquitetura e Performance em Games</a> - Visão geral sobre como a arquitetura de software impacta a performance em jogos.</li>
+                <li><a href="introducao/sobre-o-livro.html">Sobre o Livro</a> - Informações sobre o livro original que inspirou esta documentação.</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>Categorias de Padrões</h2>
+            
+            <h3>Padrões de Design</h3>
+            <div class="pattern-list">
+                <div class="pattern-card">
+                    <h3>Command Pattern</h3>
+                    <p>Encapsula uma solicitação como um objeto, permitindo parametrizar clientes com diferentes solicitações.</p>
+                    <a href="design-patterns/command.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Flyweight Pattern</h3>
+                    <p>Usa compartilhamento para suportar grandes quantidades de objetos de granularidade fina de forma eficiente.</p>
+                    <a href="design-patterns/flyweight.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Observer Pattern</h3>
+                    <p>Define uma dependência um-para-muitos entre objetos para que quando um objeto mude de estado, todos seus dependentes sejam notificados.</p>
+                    <a href="design-patterns/observer.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Prototype Pattern</h3>
+                    <p>Cria novos objetos clonando um objeto existente, conhecido como protótipo.</p>
+                    <a href="design-patterns/prototype.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Singleton Pattern</h3>
+                    <p>Garante que uma classe tenha apenas uma instância e fornece um ponto global de acesso a ela.</p>
+                    <a href="design-patterns/singleton.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>State Pattern</h3>
+                    <p>Permite que um objeto altere seu comportamento quando seu estado interno muda.</p>
+                    <a href="design-patterns/state.html">Ver documentação completa</a>
+                </div>
+            </div>
+            
+            <h3>Padrões de Sequenciamento</h3>
+            <div class="pattern-list">
+                <div class="pattern-card">
+                    <h3>Double Buffer Pattern</h3>
+                    <p>Evita artefatos visuais ao renderizar frames completos em um buffer secundário antes de exibi-los.</p>
+                    <a href="sequencing-patterns/double-buffer.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Game Loop Pattern</h3>
+                    <p>Gerencia o fluxo de tempo e processamento em um jogo, independente da entrada do usuário.</p>
+                    <a href="sequencing-patterns/game-loop.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Update Method Pattern</h3>
+                    <p>Simula comportamentos independentes para objetos de jogo chamando um método de atualização em cada objeto a cada frame.</p>
+                    <a href="sequencing-patterns/update-method.html">Ver documentação completa</a>
+                </div>
+            </div>
+            
+            <h3>Padrões Comportamentais</h3>
+            <div class="pattern-list">
+                <div class="pattern-card">
+                    <h3>Bytecode Pattern</h3>
+                    <p>Define uma linguagem virtual para comportamentos de jogo que podem ser compilados para bytecode e interpretados.</p>
+                    <a href="behavioral-patterns/bytecode.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Subclass Sandbox Pattern</h3>
+                    <p>Define um conjunto de operações na classe base que as subclasses podem usar para implementar comportamentos.</p>
+                    <a href="behavioral-patterns/subclass-sandbox.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Type Object Pattern</h3>
+                    <p>Permite criar novos "tipos" de objetos em tempo de execução definindo comportamentos em objetos separados.</p>
+                    <a href="behavioral-patterns/type-object.html">Ver documentação completa</a>
+                </div>
+            </div>
+            
+            <h3>Padrões de Desacoplamento</h3>
+            <div class="pattern-list">
+                <div class="pattern-card">
+                    <h3>Component Pattern</h3>
+                    <p>Permite compor objetos de jogo a partir de componentes reutilizáveis em vez de herança profunda.</p>
+                    <a href="decoupling-patterns/component.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Event Queue Pattern</h3>
+                    <p>Desacopla o remetente de uma notificação do seu receptor armazenando a mensagem em uma fila.</p>
+                    <a href="decoupling-patterns/event-queue.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Service Locator Pattern</h3>
+                    <p>Fornece um ponto global de acesso a um serviço sem acoplar clientes à implementação concreta.</p>
+                    <a href="decoupling-patterns/service-locator.html">Ver documentação completa</a>
+                </div>
+            </div>
+            
+            <h3>Padrões de Otimização</h3>
+            <div class="pattern-list">
+                <div class="pattern-card">
+                    <h3>Data Locality Pattern</h3>
+                    <p>Organiza dados para tirar proveito do cache da CPU e melhorar a performance.</p>
+                    <a href="optimization-patterns/data-locality.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Dirty Flag Pattern</h3>
+                    <p>Evita cálculos desnecessários rastreando quais entidades foram modificadas.</p>
+                    <a href="optimization-patterns/dirty-flag.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Object Pool Pattern</h3>
+                    <p>Melhora a performance e o uso de memória reutilizando objetos em vez de criar novos.</p>
+                    <a href="optimization-patterns/object-pool.html">Ver documentação completa</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Spatial Partition Pattern</h3>
+                    <p>Otimiza consultas espaciais dividindo o espaço em regiões para reduzir o número de pares de objetos a verificar.</p>
+                    <a href="optimization-patterns/spatial-partition.html">Ver documentação completa</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metadata">
+            <h2>Metadados para Indexação</h2>
+            <ul>
+                <li><strong>Título:</strong> Game Programming Patterns - Documentação</li>
+                <li><strong>Autor:</strong> Jean Lorencini</li>
+                <li><strong>Baseado no livro:</strong> "Game Programming Patterns" de Robert Nystrom</li>
+                <li><strong>Última atualização:</strong> 22 de Fevereiro de 2024</li>
+                <li><strong>Idioma principal:</strong> Português (Brasil)</li>
+                <li><strong>Categorias:</strong> Desenvolvimento de Jogos, Padrões de Design, Programação</li>
+                <li><strong>Público-alvo:</strong> Desenvolvedores de jogos, Estudantes de programação, Engenheiros de software</li>
+            </ul>
+            
+            <h3>Estrutura do Site</h3>
+            <ul>
+                <li><strong>Página inicial:</strong> <a href="index.html">index.html</a></li>
+                <li><strong>Sitemap:</strong> <a href="sitemap.xml">sitemap.xml</a></li>
+                <li><strong>Robots.txt:</strong> <a href="robots.txt">robots.txt</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Script para garantir que todos os links estejam funcionando
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                // Adicionar atributos para melhorar a acessibilidade
+                link.setAttribute('rel', 'noopener');
+            });
+        });
+    </script>
 </body>
 </html> 

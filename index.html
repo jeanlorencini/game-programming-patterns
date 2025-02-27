@@ -3,70 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Programming Patterns - HTML Sitemap</title>
+    <meta name="description" content="Documentação completa sobre Game Programming Patterns, incluindo padrões de design, otimização, comportamentais e de desacoplamento para desenvolvimento de jogos.">
+    <meta name="keywords" content="game programming, design patterns, game development, padrões de programação, desenvolvimento de jogos">
+    <meta name="author" content="Jean Lorencini">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://jeanlorencini.github.io/game-programming-patterns/index.html">
+    <!-- Preload de fontes e recursos críticos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Game Programming Patterns - Documentação</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+            position: relative;
+            padding-left: 15px;
+        }
+        li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+        a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        /* Media queries para responsividade */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .section-title {
+                font-size: 1.3em;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .section-title {
+                font-size: 1.2em;
+            }
+            ul {
+                padding-left: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Game Programming Patterns - HTML Sitemap</h1>
-    <ul>
-        <li><a href="https://jeanlorencini.github.io/game-programming-patterns/">Home</a></li>
+    <div class="container">
+        <h1>Game Programming Patterns - Documentação</h1>
         
-        <li>Introdução
+        <div class="section">
+            <h2 class="section-title">Introdução</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/introducao/arquitetura-performance-games.html">Arquitetura, Performance e Games</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/introducao/sobre-o-livro.html">Sobre o Livro</a></li>
+                <li><a href="introducao/arquitetura-performance-games.html">Arquitetura e Performance em Games</a></li>
+                <li><a href="introducao/sobre-o-livro.html">Sobre o Livro</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Princípios
+        <div class="section">
+            <h2 class="section-title">Princípios</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/principles/kiss-principle.html">KISS Principle</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/principles/solid-principles.html">SOLID Principles</a></li>
+                <li><a href="principles/kiss-principle.html">KISS Principle</a></li>
+                <li><a href="principles/solid-principles.html">SOLID Principles</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Design Patterns
+        <div class="section">
+            <h2 class="section-title">Design Patterns</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/command.html">Command</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/flyweight.html">Flyweight</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/observer.html">Observer</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/prototype.html">Prototype</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/singleton.html">Singleton</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/design-patterns/state.html">State</a></li>
+                <li><a href="design-patterns/command.html">Command Pattern</a></li>
+                <li><a href="design-patterns/flyweight.html">Flyweight Pattern</a></li>
+                <li><a href="design-patterns/observer.html">Observer Pattern</a></li>
+                <li><a href="design-patterns/prototype.html">Prototype Pattern</a></li>
+                <li><a href="design-patterns/singleton.html">Singleton Pattern</a></li>
+                <li><a href="design-patterns/state.html">State Pattern</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Padrões de Sequenciamento
+        <div class="section">
+            <h2 class="section-title">Sequencing Patterns</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/double-buffer.html">Double Buffer</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/game-loop.html">Game Loop</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/sequencing-patterns/update-method.html">Update Method</a></li>
+                <li><a href="sequencing-patterns/double-buffer.html">Double Buffer Pattern</a></li>
+                <li><a href="sequencing-patterns/game-loop.html">Game Loop Pattern</a></li>
+                <li><a href="sequencing-patterns/update-method.html">Update Method Pattern</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Padrões Comportamentais
+        <div class="section">
+            <h2 class="section-title">Behavioral Patterns</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/bytecode.html">Bytecode</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/subclass-sandbox.html">Subclass Sandbox</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/behavioral-patterns/type-object.html">Type Object</a></li>
+                <li><a href="behavioral-patterns/bytecode.html">Bytecode Pattern</a></li>
+                <li><a href="behavioral-patterns/subclass-sandbox.html">Subclass Sandbox Pattern</a></li>
+                <li><a href="behavioral-patterns/type-object.html">Type Object Pattern</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Padrões de Desacoplamento
+        <div class="section">
+            <h2 class="section-title">Decoupling Patterns</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/component.html">Component</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/event-queue.html">Event Queue</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/decoupling-patterns/service-locator.html">Service Locator</a></li>
+                <li><a href="decoupling-patterns/component.html">Component Pattern</a></li>
+                <li><a href="decoupling-patterns/event-queue.html">Event Queue Pattern</a></li>
+                <li><a href="decoupling-patterns/service-locator.html">Service Locator Pattern</a></li>
             </ul>
-        </li>
+        </div>
 
-        <li>Padrões de Otimização
+        <div class="section">
+            <h2 class="section-title">Optimization Patterns</h2>
             <ul>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/data-locality.html">Data Locality</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/dirty-flag.html">Dirty Flag</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/object-pool.html">Object Pool</a></li>
-                <li><a href="https://jeanlorencini.github.io/game-programming-patterns/optimization-patterns/spatial-partition.html">Spatial Partition</a></li>
+                <li><a href="optimization-patterns/data-locality.html">Data Locality Pattern</a></li>
+                <li><a href="optimization-patterns/dirty-flag.html">Dirty Flag Pattern</a></li>
+                <li><a href="optimization-patterns/object-pool.html">Object Pool Pattern</a></li>
+                <li><a href="optimization-patterns/spatial-partition.html">Spatial Partition Pattern</a></li>
             </ul>
-        </li>
-    </ul>
+        </div>
+    </div>
 </body>
+<script>
+    // Script para verificar links quebrados
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para verificar se um link está quebrado
+        function checkBrokenLink(link) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    resolve(false); // Link não está quebrado
+                };
+                img.onerror = function() {
+                    console.warn('Link possivelmente quebrado:', link);
+                    resolve(true); // Link possivelmente quebrado
+                };
+                img.src = link;
+            });
+        }
+
+        // Garantir que o conteúdo seja acessível mesmo sem JavaScript
+        // Todos os links já estão no HTML, então o conteúdo é acessível sem JS
+        
+        // Verificar links (apenas para diagnóstico, não afeta a indexação)
+        const links = document.querySelectorAll('a');
+        links.forEach(link => {
+            // Adicionar atributos para melhorar a acessibilidade
+            link.setAttribute('rel', 'noopener');
+            
+            // Verificar apenas links internos para evitar problemas de CORS
+            if (link.href.includes(window.location.hostname)) {
+                checkBrokenLink(link.href).then(isBroken => {
+                    if (isBroken) {
+                        console.warn('Link possivelmente quebrado:', link.href);
+                    }
+                });
+            }
+        });
+    });
+</script>
 </html> 
