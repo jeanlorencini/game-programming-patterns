@@ -1,0 +1,106 @@
+{
+  "documentation_config": {
+    "title": "Game Programming Patterns - Documentação",
+    "description": "Documentação completa sobre Game Programming Patterns, incluindo padrões de design, otimização, comportamentais e de desacoplamento para desenvolvimento de jogos.",
+    "language": "pt-BR",
+    "base_url": "https://jeanlorencini.github.io/game-programming-patterns/",
+    "entry_point": "cursor-entry.html",
+    "sitemap": "cursor-sitemap.html",
+    "xml_sitemap": "sitemap.xml",
+    "robots": "robots-cursor.txt",
+    "indexable": true
+  },
+  "documentation_categories": [
+    {
+      "name": "Introdução",
+      "description": "Conceitos introdutórios sobre padrões de programação de jogos",
+      "files": [
+        "introducao/arquitetura-performance-games.html",
+        "introducao/sobre-o-livro.html"
+      ]
+    },
+    {
+      "name": "Design Patterns",
+      "description": "Padrões de design clássicos aplicados a jogos",
+      "files": [
+        "design-patterns/command.html",
+        "design-patterns/flyweight.html",
+        "design-patterns/observer.html",
+        "design-patterns/prototype.html",
+        "design-patterns/singleton.html",
+        "design-patterns/state.html"
+      ]
+    },
+    {
+      "name": "Sequencing Patterns",
+      "description": "Padrões para gerenciar sequenciamento em jogos",
+      "files": [
+        "sequencing-patterns/double-buffer.html",
+        "sequencing-patterns/game-loop.html",
+        "sequencing-patterns/update-method.html"
+      ]
+    },
+    {
+      "name": "Behavioral Patterns",
+      "description": "Padrões para comportamentos em jogos",
+      "files": [
+        "behavioral-patterns/bytecode.html",
+        "behavioral-patterns/subclass-sandbox.html",
+        "behavioral-patterns/type-object.html"
+      ]
+    },
+    {
+      "name": "Decoupling Patterns",
+      "description": "Padrões para desacoplamento em jogos",
+      "files": [
+        "decoupling-patterns/component.html",
+        "decoupling-patterns/event-queue.html",
+        "decoupling-patterns/service-locator.html"
+      ]
+    },
+    {
+      "name": "Optimization Patterns",
+      "description": "Padrões para otimização em jogos",
+      "files": [
+        "optimization-patterns/data-locality.html",
+        "optimization-patterns/dirty-flag.html",
+        "optimization-patterns/object-pool.html",
+        "optimization-patterns/spatial-partition.html"
+      ]
+    }
+  ],
+  "indexing_instructions": {
+    "priority_pages": [
+      "cursor-entry.html",
+      "index.html",
+      "cursor-sitemap.html"
+    ],
+    "crawl_depth": 3,
+    "follow_links": true,
+    "index_frequency": "weekly",
+    "ignore_patterns": [
+      "*.git*",
+      "*.md",
+      "*.json",
+      "*.txt"
+    ]
+  },
+  "ai_metadata": {
+    "domain": "game-development",
+    "topics": [
+      "design patterns",
+      "game programming",
+      "optimization",
+      "architecture",
+      "performance"
+    ],
+    "audience": "game developers",
+    "complexity": "intermediate",
+    "code_languages": [
+      "C++",
+      "C#",
+      "Java",
+      "JavaScript"
+    ]
+  }
+} 

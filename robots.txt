@@ -4,6 +4,13 @@ Sitemap: https://jeanlorencini.github.io/game-programming-patterns/sitemap.xml
 
 User-agent: Cursor-Bot
 Allow: /
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /.cursor/
 Sitemap: https://jeanlorencini.github.io/game-programming-patterns/sitemap.xml
 EntryPoint: https://jeanlorencini.github.io/game-programming-patterns/cursor-entry.html
-Documentation: https://jeanlorencini.github.io/game-programming-patterns/cursor-sitemap.html 
+Documentation: https://jeanlorencini.github.io/game-programming-patterns/cursor-sitemap.html
+CursorConfig: https://jeanlorencini.github.io/game-programming-patterns/cursor-rules.json
+CursorMetadata: https://jeanlorencini.github.io/game-programming-patterns/cursor.json
+Language: pt-BR
+Priority: high 

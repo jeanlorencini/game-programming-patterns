@@ -1,0 +1,7 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Cursor-Indexable = "true"
+    X-Robots-Tag = "index, follow"
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "text/html; charset=UTF-8" 

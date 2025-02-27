@@ -1,18 +1,32 @@
 {
   "entry_point": "cursor-entry.html",
   "sitemap": "sitemap.xml",
+  "html_sitemap": "cursor-sitemap.html",
+  "manifest": "cursor-manifest.json",
+  "config": "cursor-rules.json",
+  "robots": "robots-cursor.txt",
   "base_url": "https://jeanlorencini.github.io/game-programming-patterns/",
   "documentation_type": "technical",
   "language": "pt-BR",
+  "version": "1.0",
   "index_priority": [
     "cursor-entry.html",
     "index.html",
     "cursor-sitemap.html"
   ],
+  "crawl_settings": {
+    "follow_links": true,
+    "crawl_depth": 3,
+    "index_frequency": "weekly",
+    "crawl_delay": 1
+  },
   "metadata": {
     "title": "Game Programming Patterns - Documentação",
     "author": "Jean Lorencini",
     "description": "Documentação completa sobre Game Programming Patterns, incluindo padrões de design, otimização, comportamentais e de desacoplamento para desenvolvimento de jogos.",
-    "keywords": ["game programming", "design patterns", "game development", "padrões de programação", "desenvolvimento de jogos"]
+    "keywords": ["game programming", "design patterns", "game development", "padrões de programação", "desenvolvimento de jogos"],
+    "domain": "game-development",
+    "audience": "game developers",
+    "complexity": "intermediate"
   }
 } 
