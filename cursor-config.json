@@ -1,0 +1,94 @@
+{
+  "documentation": {
+    "title": "Game Programming Patterns - Documentação",
+    "description": "Documentação completa sobre Game Programming Patterns, incluindo padrões de design, otimização, comportamentais e de desacoplamento para desenvolvimento de jogos.",
+    "language": "pt-BR",
+    "type": "technical",
+    "entry_points": [
+      {
+        "url": "cursor-entry.html",
+        "title": "Ponto de Entrada para Cursor.ai",
+        "priority": 1.0
+      },
+      {
+        "url": "index.html",
+        "title": "Página Inicial",
+        "priority": 0.9
+      },
+      {
+        "url": "cursor-sitemap.html",
+        "title": "Sitemap para Cursor.ai",
+        "priority": 0.9
+      }
+    ],
+    "sitemaps": [
+      {
+        "url": "sitemap.xml",
+        "format": "xml"
+      },
+      {
+        "url": "cursor-sitemap.html",
+        "format": "html"
+      }
+    ],
+    "categories": [
+      {
+        "name": "Introdução",
+        "description": "Conceitos introdutórios sobre padrões de programação de jogos",
+        "urls": [
+          "introducao/arquitetura-performance-games.html",
+          "introducao/sobre-o-livro.html"
+        ]
+      },
+      {
+        "name": "Design Patterns",
+        "description": "Padrões de design clássicos aplicados a jogos",
+        "urls": [
+          "design-patterns/command.html",
+          "design-patterns/flyweight.html",
+          "design-patterns/observer.html",
+          "design-patterns/prototype.html",
+          "design-patterns/singleton.html",
+          "design-patterns/state.html"
+        ]
+      },
+      {
+        "name": "Sequencing Patterns",
+        "description": "Padrões para gerenciar sequenciamento em jogos",
+        "urls": [
+          "sequencing-patterns/double-buffer.html",
+          "sequencing-patterns/game-loop.html",
+          "sequencing-patterns/update-method.html"
+        ]
+      },
+      {
+        "name": "Behavioral Patterns",
+        "description": "Padrões para comportamentos em jogos",
+        "urls": [
+          "behavioral-patterns/bytecode.html",
+          "behavioral-patterns/subclass-sandbox.html",
+          "behavioral-patterns/type-object.html"
+        ]
+      },
+      {
+        "name": "Decoupling Patterns",
+        "description": "Padrões para desacoplamento em jogos",
+        "urls": [
+          "decoupling-patterns/component.html",
+          "decoupling-patterns/event-queue.html",
+          "decoupling-patterns/service-locator.html"
+        ]
+      },
+      {
+        "name": "Optimization Patterns",
+        "description": "Padrões para otimização em jogos",
+        "urls": [
+          "optimization-patterns/data-locality.html",
+          "optimization-patterns/dirty-flag.html",
+          "optimization-patterns/object-pool.html",
+          "optimization-patterns/spatial-partition.html"
+        ]
+      }
+    ]
+  }
+} 

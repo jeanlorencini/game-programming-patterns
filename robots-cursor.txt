@@ -1,0 +1,4 @@
+User-agent: Cursor-Bot
+Allow: /
+Sitemap: https://jeanlorencini.github.io/game-programming-patterns/sitemap.xml
+EntryPoint: https://jeanlorencini.github.io/game-programming-patterns/cursor-entry.html 
